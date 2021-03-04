@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:tasks/models/task_model.dart';
+import 'package:tasks/util/database_helper.dart';
 import 'package:tasks/util/size_config.dart';
 import 'package:tasks/util/themes.dart';
 import 'package:intl/intl.dart';
 
 class AddTaskScreen extends StatefulWidget {
+  final Task task;
+  final Function updateListCallback;
+
+  AddTaskScreen({this.task, this.updateListCallback});
   @override
   _AddTaskScreenState createState() => _AddTaskScreenState();
 }
@@ -11,7 +17,7 @@ class AddTaskScreen extends StatefulWidget {
 class _AddTaskScreenState extends State<AddTaskScreen> {
   final _formKey = GlobalKey<FormState>();
   String title = "";
-  String priority;
+  String priority = "";
   DateTime date = DateTime.now().add(Duration(minutes: 5));
   List<bool> chipStates = [true, false, false];
   ScrollController _scrollController = ScrollController();
@@ -52,12 +58,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     if (mytime != null &&
         (mytime.hour != date.hour && mytime.minute != date.minute)) {
       setState(() {
-        DateTime newDate = DateTime(date.year, date.month, date.day, mytime.hour,
-            mytime.minute, date.second, date.millisecond, date.microsecond);
+        DateTime newDate = DateTime(
+            date.year,
+            date.month,
+            date.day,
+            mytime.hour,
+            mytime.minute,
+            date.second,
+            date.millisecond,
+            date.microsecond);
         date = newDate;
         _timeController.text = _timeFormatter.format(date);
       });
-
     }
   }
 
@@ -68,6 +80,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     _focusNode = FocusNode();
     _focusNodeDate = FocusNode();
     _focusNodeTime = FocusNode();
+    if (widget.task != null) {
+      if (widget.task.priority == "High") {
+        chipStates = [false, false, true];
+      } else if (widget.task.priority == "Medium") {
+        chipStates = [false, true, false];
+      }
+      title = widget.task.title;
+      date = widget.task.date;
+      priority = widget.task.priority;
+    }
     _dateController.text = _dateFormatter.format(date);
     _timeController.text = _timeFormatter.format(date);
   }
@@ -100,15 +122,37 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   }
 
   _submit() {
-    print("${date.hour} - ${date.minute}");
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      print(title + date.toString() + chipStates.toString());
+      if (chipStates[0] == true) {
+        priority = "Low";
+      } else if (chipStates[1] == true) {
+        priority = "Medium";
+      } else {
+        priority = "High";
+      }
+      print(title + date.toString() + priority);
 
       // Insert/Update Task to DB
-
+      Task task = Task(title: title, date: date, priority: priority);
+      if (widget.task == null) {
+        task.status = 0;
+        DatabaseHelper.instance.insertTask(task);
+      } else {
+        task.id = widget.task.id;
+        task.status = widget.task.status;
+        DatabaseHelper.instance.updateTask(task);
+      }
+       widget.updateListCallback();
       Navigator.pop(context);
     }
+  }
+
+  _delete() {
+    print("deleting..");
+    DatabaseHelper.instance.deleteTask(widget.task);
+     widget.updateListCallback();
+    Navigator.pop(context);
   }
 
   @override
@@ -148,7 +192,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         left: SizeConfig.safeBlockHorizontal * 8.6,
                         top: SizeConfig.safeBlockVertical * 6), // Top Space
                     child: Text(
-                      "Add Task",
+                      widget.task == null ? "Add Task" : "Edit Task",
                       style: MyThemes.headTextStyle,
                     ),
                   ),
@@ -183,7 +227,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                       () => _scrollController.animateTo(
                                           _scrollController
                                                   .position.maxScrollExtent -
-                                              SizeConfig.safeBlockVertical * 16.6,
+                                              SizeConfig.safeBlockVertical *
+                                                  16.6,
                                           duration: Duration(milliseconds: 300),
                                           curve: Curves.easeOut));
                                 },
@@ -439,36 +484,98 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           SizedBox(
                             height: SizeConfig.safeBlockVertical * 5.6,
                           ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                                                      child: Container(
-                              child: FlatButton(
-                                colorBrightness:
-                                    Theme.of(context).scaffoldBackgroundColor ==
-                                            Colors.white
-                                        ? Brightness.dark
-                                        : Brightness.light,
-                                color: kPrimaryColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        SizeConfig.safeBlockVertical * 0.7)),
-                                onPressed: () {
-                                  _submit();
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                    top: SizeConfig.safeBlockVertical *0.6,
-                                    bottom: SizeConfig.safeBlockVertical*0.6,
-                                    right: SizeConfig.safeBlockHorizontal*1,
-                                    left: SizeConfig.safeBlockHorizontal*1
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              widget.task != null ? (Container(
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    primary: (Theme.of(context)
+                                                  .scaffoldBackgroundColor ==
+                                              Colors.white
+                                          ? Colors.white
+                                          : Colors.black),
+                                    backgroundColor: (Theme.of(context)
+                                                  .scaffoldBackgroundColor ==
+                                              Colors.white
+                                          ? Colors.black
+                                          : Colors.white),
+                                    animationDuration:
+                                        Duration(milliseconds: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          SizeConfig.safeBlockVertical * 0.7),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            SizeConfig.safeBlockHorizontal *
+                                                7,
+                                        vertical: 0),
                                   ),
-                                  child: Text(
-                                    "+",
-                                    style: MyThemes.fieldButtonTextStyle,
+                                  onPressed: () {
+                                    _delete();
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        top: SizeConfig.safeBlockVertical *
+                                            0.6,
+                                        bottom: SizeConfig.safeBlockVertical *
+                                            0.6,
+                                        right:
+                                            SizeConfig.safeBlockHorizontal *
+                                                1,
+                                        left: SizeConfig.safeBlockHorizontal *
+                                            1),
+                                    child: Text("×",
+                                      style: MyThemes.fieldButtonTextStyle,
+                                    ),
+                                  ),
+                                ),
+                              )) : (SizedBox())
+                              ,
+                              SizedBox(
+                                width: SizeConfig.safeBlockHorizontal*10,
+                              ),
+                              Container(
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    primary: Theme.of(context)
+                                        .scaffoldBackgroundColor,
+                                    backgroundColor: kPrimaryColor,
+                                    animationDuration:
+                                        Duration(milliseconds: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          SizeConfig.safeBlockVertical * 0.7),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            SizeConfig.safeBlockHorizontal *
+                                                7,
+                                        vertical: 0),
+                                  ),
+                                  onPressed: () {
+                                    _submit();
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        top: SizeConfig.safeBlockVertical *
+                                            0.6,
+                                        bottom: SizeConfig.safeBlockVertical *
+                                            0.6,
+                                        right:
+                                            SizeConfig.safeBlockHorizontal *
+                                                1,
+                                        left: SizeConfig.safeBlockHorizontal *
+                                            1),
+                                    child: Text(
+                                      widget.task == null ? "+" : "≈",
+                                      style: MyThemes.fieldButtonTextStyle,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
+                            ],
                           )
                         ],
                       ),

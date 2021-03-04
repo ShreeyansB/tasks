@@ -21,8 +21,8 @@ class TaskIcons {
   static const _kFontFam = 'TaskIcons';
   static const String _kFontPkg = null;
 
-  static const IconData add_variable = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData date = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData exclamation_mark = IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData equalizer = IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData date = IconData(0xe804, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData exclamation_mark = IconData(0xe805, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData equalizer = IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData approve = IconData(0xe807, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

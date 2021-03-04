@@ -11,6 +11,8 @@ environment:
 dependencies:
   circular_check_box: ^1.0.4
   intl: ^0.16.1
+  sqflite: ^2.0.0+2
+  path_provider: ^2.0.1
   
   flutter:
     sdk: flutter
@@ -29,7 +31,7 @@ flutter:
   fonts: 
     - family:  TaskIcons
       fonts:
-        - asset: fonts/TaskIcons.ttf
+        - asset: "assets/fonts/TaskIcons.ttf"
 
     - family: "Circular Std"
       fonts:
