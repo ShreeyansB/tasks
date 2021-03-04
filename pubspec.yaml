@@ -6,7 +6,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
   circular_check_box: ^1.0.4
@@ -27,6 +27,10 @@ flutter:
   uses-material-design: true
 
   fonts: 
+    - family:  TaskIcons
+      fonts:
+        - asset: fonts/TaskIcons.ttf
+
     - family: "Circular Std"
       fonts:
         - asset: "assets/fonts/CircularStd-Book.ttf"

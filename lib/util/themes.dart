@@ -20,6 +20,7 @@ class MyThemes {
     primaryColor: kPrimaryColor,
     colorScheme: ColorScheme.light(primary: kPrimaryColor),
     chipTheme: ThemeData.light().chipTheme.copyWith(
+      backgroundColor: Color(0xfff2f3f3),
       secondaryLabelStyle: TextStyle(
         color: Colors.white
       ),
@@ -35,6 +36,7 @@ class MyThemes {
     primaryColor: kPrimaryColor,
     colorScheme: ColorScheme.dark(primary: kPrimaryColor),
     chipTheme: ThemeData.dark().chipTheme.copyWith(
+      backgroundColor: Color(0xff1c1c1c),
       secondaryLabelStyle: TextStyle(
         color: Colors.black
       ),
@@ -72,7 +74,7 @@ class MyThemes {
   );
 
   static TextStyle fieldButtonTextStyle = TextStyle(
-    fontSize: themeblockvt * 3,
+    fontSize: themeblockvt * 4,
     fontFamily: "Circular Std",
     fontWeight: FontWeight.w700,
   );

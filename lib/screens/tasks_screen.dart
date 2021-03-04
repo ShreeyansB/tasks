@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tasks/screens/add_task_screen.dart';
 import 'package:tasks/util/size_config.dart';
 import 'package:tasks/util/themes.dart';
+import 'package:tasks/util/task_icons_icons.dart';
 
 class TasksScreen extends StatefulWidget {
   @override
@@ -17,7 +18,7 @@ class _TasksScreenState extends State<TasksScreen> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           backgroundColor: Theme.of(context).primaryColor,
-          child: Icon(Icons.add, color: Theme.of(context).scaffoldBackgroundColor,),
+          child: Icon(TaskIcons.add_variable, color: Theme.of(context).scaffoldBackgroundColor,),
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               return AddTaskScreen();
@@ -91,8 +92,8 @@ class _TaskTileState extends State<TaskTile> {
       children: [
         Padding(
           padding: EdgeInsets.only(
-              top: SizeConfig.safeBlockVertical * 0.9,
-              bottom: SizeConfig.safeBlockVertical * 0.9,
+              top: SizeConfig.safeBlockVertical * 1.2,
+              bottom: SizeConfig.safeBlockVertical * 1.2,
               left: SizeConfig.safeBlockHorizontal * 5.6,
               right: SizeConfig.safeBlockHorizontal * 4),
           child: ListTile(
