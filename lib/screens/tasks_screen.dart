@@ -6,6 +6,11 @@ import 'package:tasks/util/database_helper.dart';
 import 'package:tasks/util/size_config.dart';
 import 'package:tasks/util/themes.dart';
 import 'package:tasks/util/task_icons_icons.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:page_transition/page_transition.dart';
 
 class TasksScreen extends StatefulWidget {
   @override
@@ -13,12 +18,69 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TasksScreenState extends State<TasksScreen> {
+  FlutterLocalNotificationsPlugin flutterNotif;
+  final DateFormat _timeFormatter = DateFormat('hh:mm a');
+
   Future<List<Task>> _taskList;
+
+  Future getTimeZone() async {
+    tz.initializeTimeZones();
+    final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+
+    tz.setLocalLocation(tz.getLocation(timeZoneName));
+    print(tz.local);
+  }
+
+  Future notifSelected(String payload) async {
+    print(payload);
+  }
+
+  Future _showNotif(Task task) async {
+    var androidDetails = AndroidNotificationDetails(
+        'Tasks', 'Task Alert', 'Sends alerts to User when the Task is due',
+        importance: Importance.high);
+    var iOSDetails = IOSNotificationDetails();
+    var notifDetails =
+        NotificationDetails(android: androidDetails, iOS: iOSDetails);
+
+    tz.TZDateTime tt = tz.TZDateTime.from(task.date, tz.local);
+    print(tt.toString());
+
+    flutterNotif.zonedSchedule(
+        task.id,
+        task.title,
+        "Due at ${_timeFormatter.format(task.date)}",
+        tz.TZDateTime.from(task.date, tz.local),
+        notifDetails,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        androidAllowWhileIdle: true);
+  }
+
+  _deleteNotif(Task task) {
+    flutterNotif.cancel(task.id);
+  }
 
   @override
   void initState() {
     super.initState();
     _updateTaskList();
+    getTimeZone();
+    var androidInitSettings =
+        AndroidInitializationSettings("ic_stat_notifications_active");
+    var iOSInitSettings = IOSInitializationSettings();
+    var initSettings = InitializationSettings(
+        android: androidInitSettings, iOS: iOSInitSettings);
+    flutterNotif = FlutterLocalNotificationsPlugin();
+    flutterNotif.initialize(initSettings, onSelectNotification: notifSelected);
+  }
+
+  _notifCallback(bool status, Task task) {
+    if (status) {
+      _deleteNotif(task);
+    } else {
+      _showNotif(task);
+    }
   }
 
   _updateTaskList() {
@@ -43,11 +105,18 @@ class _TasksScreenState extends State<TasksScreen> {
             size: SizeConfig.safeBlockVertical * 4,
           ),
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return AddTaskScreen(
-                updateListCallback: _updateTaskList,
-              );
-            }));
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.fade,
+                child: AddTaskScreen(
+                  updateListCallback: _updateTaskList,
+                ),
+                curve: Curves.easeInCubic,
+                duration: Duration(milliseconds: 300),
+                reverseDuration: Duration(milliseconds: 300),
+              ),
+            );
           },
         ),
         body: FutureBuilder<List<Task>>(
@@ -114,6 +183,7 @@ class _TasksScreenState extends State<TasksScreen> {
                   return TaskTile(
                     task: snapshot.data[index - 1],
                     callback: _updateTaskList,
+                    notifCallback: _notifCallback,
                   );
                 }
               },
@@ -128,7 +198,8 @@ class _TasksScreenState extends State<TasksScreen> {
 class TaskTile extends StatefulWidget {
   final Task task;
   final Function callback;
-  TaskTile({@required this.task, this.callback});
+  final Function notifCallback;
+  TaskTile({@required this.task, this.callback, this.notifCallback});
 
   @override
   _TaskTileState createState() => _TaskTileState();
@@ -139,6 +210,16 @@ class _TaskTileState extends State<TaskTile> {
 
   final DateFormat _dateFormatter = DateFormat('dd MMMM, yyyy');
   final DateFormat _timeFormatter = DateFormat('hh:mm a');
+
+  Color _setPriorityColor(Task task) {
+    if (task.priority == "High") {
+      return kPrimaryColor;
+    } else if (task.priority == "Medium") {
+      return kPrimaryColor.withOpacity(0.84);
+    } else {
+      return kPrimaryColor.withOpacity(0.72);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,14 +233,19 @@ class _TaskTileState extends State<TaskTile> {
               right: SizeConfig.safeBlockHorizontal * 4),
           child: ListTile(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(
-                builder: (context) {
-                  return AddTaskScreen(
-                    task: widget.task,
-                    updateListCallback: widget.callback,
-                  );
-                },
-              ));
+              Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.fade,
+                child: AddTaskScreen(
+                  updateListCallback: widget.callback,
+                  task: widget.task,
+                ),
+                curve: Curves.easeInCubic,
+                duration: Duration(milliseconds: 300),
+                reverseDuration: Duration(milliseconds: 300),
+              ),
+            );
             },
             title: Text(
               widget.task.title,
@@ -174,17 +260,35 @@ class _TaskTileState extends State<TaskTile> {
                     : TextDecoration.lineThrough,
               ),
             ),
-            subtitle: Text(
-              "${_dateFormatter.format(widget.task.date)} @ ${_timeFormatter.format(widget.task.date)} • ${widget.task.priority}",
-              maxLines: 2,
+            subtitle: RichText(
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  fontFamily: "Circular Std",
-                  fontWeight: FontWeight.normal,
-                  fontSize: SizeConfig.safeBlockVertical * 1.7,
-                  decoration: widget.task.status == 0
-                      ? TextDecoration.none
-                      : TextDecoration.lineThrough),
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text:
+                        "${_dateFormatter.format(widget.task.date)} @ ${_timeFormatter.format(widget.task.date)} • ",
+                    style: TextStyle(
+                        fontFamily: "Circular Std",
+                        fontWeight: FontWeight.normal,
+                        fontSize: SizeConfig.safeBlockVertical * 1.7,
+                        decoration: widget.task.status == 0
+                            ? TextDecoration.none
+                            : TextDecoration.lineThrough),
+                  ),
+                  TextSpan(
+                    text: "${widget.task.priority}",
+                    style: TextStyle(
+                        fontFamily: "Circular Std",
+                        fontWeight: FontWeight.normal,
+                        fontSize: SizeConfig.safeBlockVertical * 1.7,
+                        color: _setPriorityColor(widget.task),
+                        decoration: widget.task.status == 0
+                            ? TextDecoration.none
+                            : TextDecoration.lineThrough),
+                  ),
+                ],
+              ),
             ),
             trailing: Checkbox(
               checkColor:
@@ -194,6 +298,7 @@ class _TaskTileState extends State<TaskTile> {
               onChanged: (value) {
                 widget.task.status = value ? 1 : 0;
                 DatabaseHelper.instance.updateTask(widget.task);
+                widget.notifCallback(value, widget.task);
                 widget.callback();
                 setState(() {});
               },
@@ -206,3 +311,16 @@ class _TaskTileState extends State<TaskTile> {
     );
   }
 }
+
+// Text(
+//               "${_dateFormatter.format(widget.task.date)} @ ${_timeFormatter.format(widget.task.date)} • ${widget.task.priority}",
+//               maxLines: 2,
+//               overflow: TextOverflow.ellipsis,
+//               style: TextStyle(
+//                   fontFamily: "Circular Std",
+//                   fontWeight: FontWeight.normal,
+//                   fontSize: SizeConfig.safeBlockVertical * 1.7,
+//                   decoration: widget.task.status == 0
+//                       ? TextDecoration.none
+//                       : TextDecoration.lineThrough),
+//             )

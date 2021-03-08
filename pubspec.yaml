@@ -3,7 +3,7 @@ name: tasks
 description: A new Flutter project.
 
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -13,6 +13,10 @@ dependencies:
   intl: ^0.16.1
   sqflite: ^2.0.0+2
   path_provider: ^2.0.1
+  flutter_local_notifications: ^4.0.1+2
+  timezone: ^0.6.1
+  flutter_native_timezone: ^1.0.10
+  page_transition: "^1.1.7+6"
   
   flutter:
     sdk: flutter

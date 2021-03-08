@@ -4,6 +4,10 @@ import 'package:tasks/util/database_helper.dart';
 import 'package:tasks/util/size_config.dart';
 import 'package:tasks/util/themes.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 
 class AddTaskScreen extends StatefulWidget {
   final Task task;
@@ -33,6 +37,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   FocusNode _focusNodeDate;
   FocusNode _focusNodeTime;
 
+  FlutterLocalNotificationsPlugin flutterNotif;
+  Future<List<Task>> _taskList;
+
   _handleDatePicker() async {
     final DateTime mydate = await showDatePicker(
       context: context,
@@ -54,23 +61,69 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       context: context,
       initialTime: TimeOfDay.now(),
     );
-
-    if (mytime != null &&
-        (mytime.hour != date.hour && mytime.minute != date.minute)) {
+    if ((mytime != null) &&
+        (mytime.hour != date.hour || mytime.minute != date.minute)) {
       setState(() {
-        DateTime newDate = DateTime(
-            date.year,
-            date.month,
-            date.day,
-            mytime.hour,
-            mytime.minute,
-            date.second,
-            date.millisecond,
-            date.microsecond);
+        DateTime newDate = DateTime(date.year, date.month, date.day,
+            mytime.hour, mytime.minute, 0, date.millisecond, date.microsecond);
         date = newDate;
         _timeController.text = _timeFormatter.format(date);
       });
     }
+  }
+
+  Future getTimeZone() async {
+    tz.initializeTimeZones();
+    final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+
+    tz.setLocalLocation(tz.getLocation(timeZoneName));
+    print(tz.local);
+  }
+
+  Future notifSelected(String payload) async {
+    print(payload);
+  }
+
+  Future _showNotif(Task task) async {
+    var androidDetails = AndroidNotificationDetails(
+        'Tasks', 'Task Alert', 'Sends alerts to User when the Task is due',
+        importance: Importance.high);
+    var iOSDetails = IOSNotificationDetails();
+    var notifDetails =
+        NotificationDetails(android: androidDetails, iOS: iOSDetails);
+    _updateTaskList();
+
+    List<PendingNotificationRequest> pendingNotificationRequests =
+        await flutterNotif.pendingNotificationRequests();
+    List<Task> myTasks;
+    await _taskList.then((value) => myTasks = value);
+    myTasks.forEach((t) {
+      if (t.title == task.title && t.date == task.date) {
+        if (pendingNotificationRequests.isNotEmpty) {
+          pendingNotificationRequests.forEach((notif) {
+            if (notif.id == t.id) {
+              flutterNotif.cancel(t.id);
+            }
+          });
+        }
+        tz.TZDateTime tt = tz.TZDateTime.from(t.date, tz.local);
+        print(tt.toString());
+        flutterNotif.zonedSchedule(t.id, t.title, "Due at ${_timeFormatter.format(t.date)}",
+            tz.TZDateTime.from(t.date, tz.local), notifDetails,
+            uiLocalNotificationDateInterpretation:
+                UILocalNotificationDateInterpretation.absoluteTime,
+            androidAllowWhileIdle: true);
+      }
+
+    });
+  }
+
+  _deleteNotif(Task task) {
+    flutterNotif.cancel(task.id);
+  }
+
+  _updateTaskList() {
+    _taskList = DatabaseHelper.instance.getTaskList();
   }
 
   @override
@@ -80,6 +133,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     _focusNode = FocusNode();
     _focusNodeDate = FocusNode();
     _focusNodeTime = FocusNode();
+
+    // notif
+    getTimeZone();
+    var androidInitSettings =
+        AndroidInitializationSettings("ic_stat_notifications_active");
+    var iOSInitSettings = IOSInitializationSettings();
+    var initSettings = InitializationSettings(
+        android: androidInitSettings, iOS: iOSInitSettings);
+    flutterNotif = FlutterLocalNotificationsPlugin();
+    flutterNotif.initialize(initSettings, onSelectNotification: notifSelected);
+
     if (widget.task != null) {
       if (widget.task.priority == "High") {
         chipStates = [false, false, true];
@@ -143,15 +207,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         task.status = widget.task.status;
         DatabaseHelper.instance.updateTask(task);
       }
-       widget.updateListCallback();
+      _showNotif(task);
+      widget.updateListCallback();
       Navigator.pop(context);
     }
   }
 
   _delete() {
     print("deleting..");
+    _deleteNotif(widget.task);
     DatabaseHelper.instance.deleteTask(widget.task);
-     widget.updateListCallback();
+    widget.updateListCallback();
     Navigator.pop(context);
   }
 
@@ -487,54 +553,61 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              widget.task != null ? (Container(
-                                child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: (Theme.of(context)
-                                                  .scaffoldBackgroundColor ==
-                                              Colors.white
-                                          ? Colors.white
-                                          : Colors.black),
-                                    backgroundColor: (Theme.of(context)
-                                                  .scaffoldBackgroundColor ==
-                                              Colors.white
-                                          ? Colors.black
-                                          : Colors.white),
-                                    animationDuration:
-                                        Duration(milliseconds: 10),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          SizeConfig.safeBlockVertical * 0.7),
-                                    ),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal:
-                                            SizeConfig.safeBlockHorizontal *
-                                                7,
-                                        vertical: 0),
-                                  ),
-                                  onPressed: () {
-                                    _delete();
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                        top: SizeConfig.safeBlockVertical *
-                                            0.6,
-                                        bottom: SizeConfig.safeBlockVertical *
-                                            0.6,
-                                        right:
-                                            SizeConfig.safeBlockHorizontal *
-                                                1,
-                                        left: SizeConfig.safeBlockHorizontal *
-                                            1),
-                                    child: Text("×",
-                                      style: MyThemes.fieldButtonTextStyle,
-                                    ),
-                                  ),
-                                ),
-                              )) : (SizedBox())
-                              ,
+                              widget.task != null
+                                  ? (Container(
+                                      child: TextButton(
+                                        style: TextButton.styleFrom(
+                                          primary: (Theme.of(context)
+                                                      .scaffoldBackgroundColor ==
+                                                  Colors.white
+                                              ? Colors.white
+                                              : Colors.black),
+                                          backgroundColor: (Theme.of(context)
+                                                      .scaffoldBackgroundColor ==
+                                                  Colors.white
+                                              ? Colors.black
+                                              : Colors.white),
+                                          animationDuration:
+                                              Duration(milliseconds: 10),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                SizeConfig.safeBlockVertical *
+                                                    0.7),
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: SizeConfig
+                                                      .safeBlockHorizontal *
+                                                  7,
+                                              vertical: 0),
+                                        ),
+                                        onPressed: () {
+                                          _delete();
+                                        },
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                              top:
+                                                  SizeConfig.safeBlockVertical *
+                                                      0.6,
+                                              bottom:
+                                                  SizeConfig.safeBlockVertical *
+                                                      0.6,
+                                              right: SizeConfig
+                                                      .safeBlockHorizontal *
+                                                  1,
+                                              left: SizeConfig
+                                                      .safeBlockHorizontal *
+                                                  1),
+                                          child: Text(
+                                            "×",
+                                            style:
+                                                MyThemes.fieldButtonTextStyle,
+                                          ),
+                                        ),
+                                      ),
+                                    ))
+                                  : (SizedBox()),
                               SizedBox(
-                                width: SizeConfig.safeBlockHorizontal*10,
+                                width: SizeConfig.safeBlockHorizontal * 10,
                               ),
                               Container(
                                 child: TextButton(
@@ -550,8 +623,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     ),
                                     padding: EdgeInsets.symmetric(
                                         horizontal:
-                                            SizeConfig.safeBlockHorizontal *
-                                                7,
+                                            SizeConfig.safeBlockHorizontal * 7,
                                         vertical: 0),
                                   ),
                                   onPressed: () {
@@ -559,15 +631,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                   },
                                   child: Padding(
                                     padding: EdgeInsets.only(
-                                        top: SizeConfig.safeBlockVertical *
-                                            0.6,
-                                        bottom: SizeConfig.safeBlockVertical *
-                                            0.6,
+                                        top: SizeConfig.safeBlockVertical * 0.6,
+                                        bottom:
+                                            SizeConfig.safeBlockVertical * 0.6,
                                         right:
-                                            SizeConfig.safeBlockHorizontal *
-                                                1,
-                                        left: SizeConfig.safeBlockHorizontal *
-                                            1),
+                                            SizeConfig.safeBlockHorizontal * 1,
+                                        left:
+                                            SizeConfig.safeBlockHorizontal * 1),
                                     child: Text(
                                       widget.task == null ? "+" : "≈",
                                       style: MyThemes.fieldButtonTextStyle,
