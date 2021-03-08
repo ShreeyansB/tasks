@@ -272,6 +272,9 @@ class _TaskTileState extends State<TaskTile> {
                         fontFamily: "Circular Std",
                         fontWeight: FontWeight.normal,
                         fontSize: SizeConfig.safeBlockVertical * 1.7,
+                        color: Theme.of(context).scaffoldBackgroundColor == Colors.white
+                      ? Colors.black.withOpacity(0.7)
+                      : Colors.white70,
                         decoration: widget.task.status == 0
                             ? TextDecoration.none
                             : TextDecoration.lineThrough),
