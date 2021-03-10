@@ -108,13 +108,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         }
         tz.TZDateTime tt = tz.TZDateTime.from(t.date, tz.local);
         print(tt.toString());
-        flutterNotif.zonedSchedule(t.id, t.title, "Due at ${_timeFormatter.format(t.date)}",
-            tz.TZDateTime.from(t.date, tz.local), notifDetails,
+        flutterNotif.zonedSchedule(
+            t.id,
+            t.title,
+            "Due at ${_timeFormatter.format(t.date)}",
+            tz.TZDateTime.from(t.date, tz.local),
+            notifDetails,
             uiLocalNotificationDateInterpretation:
                 UILocalNotificationDateInterpretation.absoluteTime,
             androidAllowWhileIdle: true);
       }
-
     });
   }
 
@@ -555,52 +558,77 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             children: [
                               widget.task != null
                                   ? (Container(
-                                      child: TextButton(
-                                        style: TextButton.styleFrom(
-                                          primary: (Theme.of(context)
+                                      child: Tooltip(
+                                        decoration: BoxDecoration(
+                                          color: (Theme.of(context)
                                                       .scaffoldBackgroundColor ==
                                                   Colors.white
-                                              ? Colors.white
-                                              : Colors.black),
-                                          backgroundColor: (Theme.of(context)
+                                              ? Color(0xfff2f3f3)
+                                              : Color(0xff1c1c1c)),
+                                          borderRadius: BorderRadius.circular(
+                                              SizeConfig.safeBlockHorizontal *
+                                                  1),
+                                        ),
+                                        textStyle: TextStyle(
+                                          color: (Theme.of(context)
                                                       .scaffoldBackgroundColor ==
                                                   Colors.white
                                               ? Colors.black
                                               : Colors.white),
-                                          animationDuration:
-                                              Duration(milliseconds: 10),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                SizeConfig.safeBlockVertical *
-                                                    0.7),
-                                          ),
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: SizeConfig
-                                                      .safeBlockHorizontal *
-                                                  7,
-                                              vertical: 0),
+                                          fontSize:
+                                              SizeConfig.safeBlockHorizontal *
+                                                  3.4,
+                                          fontFamily: "Circular Std",
                                         ),
-                                        onPressed: () {
-                                          _delete();
-                                        },
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                              top:
-                                                  SizeConfig.safeBlockVertical *
-                                                      0.6,
-                                              bottom:
-                                                  SizeConfig.safeBlockVertical *
-                                                      0.6,
-                                              right: SizeConfig
-                                                      .safeBlockHorizontal *
-                                                  1,
-                                              left: SizeConfig
-                                                      .safeBlockHorizontal *
-                                                  1),
-                                          child: Text(
-                                            "×",
-                                            style:
-                                                MyThemes.fieldButtonTextStyle,
+                                        message: "Delete Task",
+                                        child: TextButton(
+                                          style: TextButton.styleFrom(
+                                            primary: (Theme.of(context)
+                                                        .scaffoldBackgroundColor ==
+                                                    Colors.white
+                                                ? Colors.white
+                                                : Colors.black),
+                                            backgroundColor: (Theme.of(context)
+                                                        .scaffoldBackgroundColor ==
+                                                    Colors.white
+                                                ? Colors.black
+                                                : Colors.white),
+                                            animationDuration:
+                                                Duration(milliseconds: 10),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius
+                                                  .circular(SizeConfig
+                                                          .safeBlockVertical *
+                                                      0.7),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: SizeConfig
+                                                        .safeBlockHorizontal *
+                                                    7,
+                                                vertical: 0),
+                                          ),
+                                          onPressed: () {
+                                            _delete();
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                                top: SizeConfig
+                                                        .safeBlockVertical *
+                                                    0.6,
+                                                bottom: SizeConfig
+                                                        .safeBlockVertical *
+                                                    0.6,
+                                                right: SizeConfig
+                                                        .safeBlockHorizontal *
+                                                    1,
+                                                left: SizeConfig
+                                                        .safeBlockHorizontal *
+                                                    1),
+                                            child: Text(
+                                              "×",
+                                              style:
+                                                  MyThemes.fieldButtonTextStyle,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -610,37 +638,62 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                 width: SizeConfig.safeBlockHorizontal * 10,
                               ),
                               Container(
-                                child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    primary: Theme.of(context)
-                                        .scaffoldBackgroundColor,
-                                    backgroundColor: kPrimaryColor,
-                                    animationDuration:
-                                        Duration(milliseconds: 10),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          SizeConfig.safeBlockVertical * 0.7),
-                                    ),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal:
-                                            SizeConfig.safeBlockHorizontal * 7,
-                                        vertical: 0),
+                                child: Tooltip(
+                                  decoration: BoxDecoration(
+                                    color: (Theme.of(context)
+                                                .scaffoldBackgroundColor ==
+                                            Colors.white
+                                        ? Color(0xfff2f3f3)
+                                        : Color(0xff1c1c1c)),
+                                    borderRadius: BorderRadius.circular(
+                                        SizeConfig.safeBlockHorizontal * 1),
                                   ),
-                                  onPressed: () {
-                                    _submit();
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                        top: SizeConfig.safeBlockVertical * 0.6,
-                                        bottom:
-                                            SizeConfig.safeBlockVertical * 0.6,
-                                        right:
-                                            SizeConfig.safeBlockHorizontal * 1,
-                                        left:
-                                            SizeConfig.safeBlockHorizontal * 1),
-                                    child: Text(
-                                      widget.task == null ? "+" : "≈",
-                                      style: MyThemes.fieldButtonTextStyle,
+                                  textStyle: TextStyle(
+                                    color: (Theme.of(context)
+                                                .scaffoldBackgroundColor ==
+                                            Colors.white
+                                        ? Colors.black
+                                        : Colors.white),
+                                    fontSize:
+                                        SizeConfig.safeBlockHorizontal * 3.4,
+                                    fontFamily: "Circular Std",
+                                  ),
+                                  message: "Add Task",
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      primary: Theme.of(context)
+                                          .scaffoldBackgroundColor,
+                                      backgroundColor: kPrimaryColor,
+                                      animationDuration:
+                                          Duration(milliseconds: 10),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            SizeConfig.safeBlockVertical * 0.7),
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal:
+                                              SizeConfig.safeBlockHorizontal *
+                                                  7,
+                                          vertical: 0),
+                                    ),
+                                    onPressed: () {
+                                      _submit();
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                          top: SizeConfig.safeBlockVertical *
+                                              0.6,
+                                          bottom: SizeConfig.safeBlockVertical *
+                                              0.6,
+                                          right:
+                                              SizeConfig.safeBlockHorizontal *
+                                                  1,
+                                          left: SizeConfig.safeBlockHorizontal *
+                                              1),
+                                      child: Text(
+                                        widget.task == null ? "+" : "≈",
+                                        style: MyThemes.fieldButtonTextStyle,
+                                      ),
                                     ),
                                   ),
                                 ),

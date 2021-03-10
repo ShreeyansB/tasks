@@ -1,3 +1,5 @@
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tasks/models/task_model.dart';
@@ -5,7 +7,6 @@ import 'package:tasks/screens/add_task_screen.dart';
 import 'package:tasks/util/database_helper.dart';
 import 'package:tasks/util/size_config.dart';
 import 'package:tasks/util/themes.dart';
-import 'package:tasks/util/task_icons_icons.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
@@ -22,6 +23,10 @@ class _TasksScreenState extends State<TasksScreen> {
   final DateFormat _timeFormatter = DateFormat('hh:mm a');
 
   Future<List<Task>> _taskList;
+
+  FlareControls _flrController;
+  bool orderPaused = true;
+  bool orderOnDate = true;
 
   Future getTimeZone() async {
     tz.initializeTimeZones();
@@ -64,6 +69,7 @@ class _TasksScreenState extends State<TasksScreen> {
   @override
   void initState() {
     super.initState();
+    _flrController = FlareControls();
     _updateTaskList();
     getTimeZone();
     var androidInitSettings =
@@ -91,33 +97,71 @@ class _TasksScreenState extends State<TasksScreen> {
     });
   }
 
+  void _playAnimation() {
+    setState(() {
+      orderPaused = false;
+    });
+    if (orderOnDate) {
+      _flrController.play("DateToPri");
+      orderOnDate = false;
+    } else {
+      _flrController.play("PriToDate");
+      orderOnDate = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     MyThemes().initBlock(context);
     return SafeArea(
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Theme.of(context).primaryColor,
-          child: Icon(
-            TaskIcons.approve,
-            color: Theme.of(context).scaffoldBackgroundColor,
-            size: SizeConfig.safeBlockVertical * 4,
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              PageTransition(
-                type: PageTransitionType.fade,
-                child: AddTaskScreen(
-                  updateListCallback: _updateTaskList,
-                ),
-                curve: Curves.easeInCubic,
-                duration: Duration(milliseconds: 300),
-                reverseDuration: Duration(milliseconds: 300),
+        floatingActionButton: Theme(
+          data: Theme.of(context).copyWith(
+            tooltipTheme: TooltipThemeData(
+              decoration: BoxDecoration(
+                color:
+                    (Theme.of(context).scaffoldBackgroundColor == Colors.white
+                        ? Color(0xfff2f3f3)
+                        : Color(0xff1c1c1c)),
+                borderRadius:
+                    BorderRadius.circular(SizeConfig.safeBlockHorizontal * 1),
               ),
-            );
-          },
+              textStyle: TextStyle(
+                color:
+                    (Theme.of(context).scaffoldBackgroundColor == Colors.white
+                        ? Colors.black
+                        : Colors.white),
+                fontSize: SizeConfig.safeBlockHorizontal * 3.4,
+                fontFamily: "Circular Std",
+              ),
+            ),
+          ),
+          child: FloatingActionButton(
+            tooltip: "Add Task",
+            backgroundColor: Theme.of(context).primaryColor,
+            child: Text(
+              "+",
+              style: TextStyle(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  fontSize: SizeConfig.safeBlockVertical * 4.5,
+                  fontFamily: "Circular Std"),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.fade,
+                  child: AddTaskScreen(
+                    updateListCallback: _updateTaskList,
+                  ),
+                  curve: Curves.easeInCubic,
+                  duration: Duration(milliseconds: 300),
+                  reverseDuration: Duration(milliseconds: 300),
+                ),
+              );
+            },
+          ),
         ),
         body: FutureBuilder<List<Task>>(
           future: _taskList,
@@ -155,9 +199,27 @@ class _TasksScreenState extends State<TasksScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "My Tasks",
-                          style: MyThemes.headTextStyle,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "My Tasks",
+                              style: MyThemes.headTextStyle,
+                            ),
+                            GestureDetector(
+                              onTap: () => _playAnimation(),
+                              child: SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: FlareActor(
+                                  "assets/images/order_by.flr",
+                                  isPaused: orderPaused,
+                                  controller: _flrController,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(
                           height: SizeConfig.safeBlockVertical * 1,
@@ -234,18 +296,18 @@ class _TaskTileState extends State<TaskTile> {
           child: ListTile(
             onTap: () {
               Navigator.push(
-              context,
-              PageTransition(
-                type: PageTransitionType.fade,
-                child: AddTaskScreen(
-                  updateListCallback: widget.callback,
-                  task: widget.task,
+                context,
+                PageTransition(
+                  type: PageTransitionType.fade,
+                  child: AddTaskScreen(
+                    updateListCallback: widget.callback,
+                    task: widget.task,
+                  ),
+                  curve: Curves.easeInCubic,
+                  duration: Duration(milliseconds: 300),
+                  reverseDuration: Duration(milliseconds: 300),
                 ),
-                curve: Curves.easeInCubic,
-                duration: Duration(milliseconds: 300),
-                reverseDuration: Duration(milliseconds: 300),
-              ),
-            );
+              );
             },
             title: Text(
               widget.task.title,
@@ -272,9 +334,10 @@ class _TaskTileState extends State<TaskTile> {
                         fontFamily: "Circular Std",
                         fontWeight: FontWeight.normal,
                         fontSize: SizeConfig.safeBlockVertical * 1.7,
-                        color: Theme.of(context).scaffoldBackgroundColor == Colors.white
-                      ? Colors.black.withOpacity(0.7)
-                      : Colors.white70,
+                        color: Theme.of(context).scaffoldBackgroundColor ==
+                                Colors.white
+                            ? Colors.black.withOpacity(0.7)
+                            : Colors.white70,
                         decoration: widget.task.status == 0
                             ? TextDecoration.none
                             : TextDecoration.lineThrough),

@@ -20,15 +20,13 @@ class MyThemes {
     primaryColor: kPrimaryColor,
     colorScheme: ColorScheme.light(primary: kPrimaryColor),
     chipTheme: ThemeData.light().chipTheme.copyWith(
-      backgroundColor: Color(0xfff2f3f3),
-      secondaryLabelStyle: TextStyle(
-        color: Colors.white
-      ),
-      secondarySelectedColor: kPrimaryColor,
-    ),
-    floatingActionButtonTheme: ThemeData.light().floatingActionButtonTheme.copyWith(
-      elevation: 0
-    ),
+          backgroundColor: Color(0xfff2f3f3),
+          secondaryLabelStyle: TextStyle(color: Colors.white),
+          secondarySelectedColor: kPrimaryColor,
+        ),
+    floatingActionButtonTheme:
+        ThemeData.light().floatingActionButtonTheme.copyWith(elevation: 0),
+    tooltipTheme: ThemeData.light().tooltipTheme.copyWith(),
   );
 
   static ThemeData myDarkTheme = ThemeData.dark().copyWith(
@@ -36,15 +34,12 @@ class MyThemes {
     primaryColor: kPrimaryColor,
     colorScheme: ColorScheme.dark(primary: kPrimaryColor),
     chipTheme: ThemeData.dark().chipTheme.copyWith(
-      backgroundColor: Color(0xff1c1c1c),
-      secondaryLabelStyle: TextStyle(
-        color: Colors.black
-      ),
-      secondarySelectedColor: kPrimaryColor,
-    ),
-    floatingActionButtonTheme: ThemeData.dark().floatingActionButtonTheme.copyWith(
-      elevation: 0
-    )
+          backgroundColor: Color(0xff1c1c1c),
+          secondaryLabelStyle: TextStyle(color: Colors.black),
+          secondarySelectedColor: kPrimaryColor,
+        ),
+    floatingActionButtonTheme:
+        ThemeData.dark().floatingActionButtonTheme.copyWith(elevation: 0),
   );
 
   static ThemeData subTextTheme = myLightTheme.copyWith();

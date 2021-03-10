@@ -17,6 +17,8 @@ dependencies:
   timezone: ^0.6.1
   flutter_native_timezone: ^1.0.10
   page_transition: "^1.1.7+6"
+  smart_flare: any
+  flare_flutter: ^2.0.6
   
   flutter:
     sdk: flutter
@@ -34,11 +36,10 @@ flutter:
 
   uses-material-design: true
 
-  fonts: 
-    - family:  TaskIcons
-      fonts:
-        - asset: "assets/fonts/TaskIcons.ttf"
+  assets:
+    - assets/images/order_by.flr
 
+  fonts: 
     - family: "Circular Std"
       fonts:
         - asset: "assets/fonts/CircularStd-Book.ttf"
