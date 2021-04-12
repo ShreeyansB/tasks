@@ -1,16 +1,18 @@
-# tasks
+# Tasks
 
-A new Flutter project.
+A simple task management app which stores tasks and notifies the user when due.
 
-## Getting Started
+## Screenshot
 
-This project is a starting point for a Flutter application.
+![Screenrecord](screenrecord.gif)
 
-A few resources to get you started if this is your first Flutter project:
+## Planned Features
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+* Settings Menu
+* Sort By Date or By Priority
+* Themes
+* Export database
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Credits
+
+* [Notekeeper](https://www.youtube.com/watch?v=_B4zdTFvPl4&list=PLW9-80IN43dlvfnira5Ty3-9Mq21SP3eN)
