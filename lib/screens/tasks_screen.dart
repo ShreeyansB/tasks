@@ -26,7 +26,8 @@ class _TasksScreenState extends State<TasksScreen> {
 
   FlareControls _flrController;
   bool orderPaused = true;
-  bool orderOnDate = true;
+  bool orderOnDate = false;
+  String animInit;
 
   Future getTimeZone() async {
     tz.initializeTimeZones();
@@ -70,6 +71,7 @@ class _TasksScreenState extends State<TasksScreen> {
   void initState() {
     super.initState();
     _flrController = FlareControls();
+    animInit = orderOnDate ? "DateToPri" : "PriToDate";
     _updateTaskList();
     getTimeZone();
     var androidInitSettings =
@@ -215,6 +217,7 @@ class _TasksScreenState extends State<TasksScreen> {
                                   "assets/images/order_by.flr",
                                   isPaused: orderPaused,
                                   controller: _flrController,
+                                  animation: animInit,
                                   fit: BoxFit.contain,
                                 ),
                               ),

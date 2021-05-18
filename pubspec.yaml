@@ -13,12 +13,12 @@ dependencies:
   intl: ^0.16.1
   sqflite: ^2.0.0+2
   path_provider: ^2.0.1
-  flutter_local_notifications: ^4.0.1+2
-  timezone: ^0.6.1
+  flutter_local_notifications: ^5.0.0+4
+  timezone: ^0.7.0
   flutter_native_timezone: ^1.0.10
-  page_transition: "^1.1.7+6"
+  page_transition: ^2.0.2
   smart_flare: any
-  flare_flutter: ^2.0.6
+  flare_flutter: ^3.0.0
   
   flutter:
     sdk: flutter
@@ -49,4 +49,4 @@ flutter:
         - asset: "assets/fonts/CircularStd-Bold.ttf"
           weight: 600
         - asset: "assets/fonts/CircularStd-Black.ttf"
-          weight: 700
+          weight: 700  
