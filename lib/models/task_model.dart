@@ -30,35 +30,4 @@ class Task {
     );
   }
 
-  static int switchPriority(String priority) {
-    switch (priority) {
-      case "Low":
-        return 0;
-        break;
-      case "Medium":
-        return 1;
-        break;
-      case "Medium":
-        return 2;
-        break;
-      default:
-        return -1;
-    }
-  }
-
-  Comparator<Task> priorityComparator = (a, b) {
-    if (switchPriority(a.priority) > switchPriority(b.priority)) {
-      return 1;
-    } else if (switchPriority(a.priority) < switchPriority(b.priority)) {
-      return -1;
-    } else {
-      if (a.date.difference(b.date).inSeconds > 0) {
-        return 1;
-      } else if (a.date.difference(b.date).inSeconds < 0) {
-        return -1;
-      } else {
-        return 0;
-      }
-    }
-  };
 }

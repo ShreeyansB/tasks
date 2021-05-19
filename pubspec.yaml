@@ -9,7 +9,6 @@ environment:
   sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
-  circular_check_box: ^1.0.4
   intl: ^0.16.1
   sqflite: ^2.0.0+2
   path_provider: ^2.0.1
@@ -17,7 +16,6 @@ dependencies:
   timezone: ^0.7.0
   flutter_native_timezone: ^1.0.10
   page_transition: ^2.0.2
-  smart_flare: any
   flare_flutter: ^3.0.0
   
   flutter:
