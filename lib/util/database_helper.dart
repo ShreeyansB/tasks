@@ -84,9 +84,7 @@ class DatabaseHelper {
     });
     // taskList.sort((taskA, taskB) => taskA.date.compareTo(taskB.date));
 
-    print("\n\n AFTER SORTING \n\n");
     taskList.sort(priorityComparator);
-    // taskList = taskList.reversed;
     return taskList;
   }
 

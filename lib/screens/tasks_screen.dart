@@ -208,19 +208,64 @@ class _TasksScreenState extends State<TasksScreen> {
                               "My Tasks",
                               style: MyThemes.headTextStyle,
                             ),
-                            GestureDetector(
-                              onTap: () => _playAnimation(),
-                              child: SizedBox(
-                                height: 30,
-                                width: 30,
-                                child: FlareActor(
-                                  "assets/images/order_by.flr",
-                                  isPaused: orderPaused,
-                                  controller: _flrController,
-                                  animation: animInit,
-                                  fit: BoxFit.contain,
+                            Row(
+                              children: [
+                                Tooltip(
+                                  message: "Sort Tasks",
+                                  decoration: BoxDecoration(
+                                    color: (Theme.of(context)
+                                                .scaffoldBackgroundColor ==
+                                            Colors.white
+                                        ? Color(0xfff2f3f3)
+                                        : Color(0xff1c1c1c)),
+                                    borderRadius: BorderRadius.circular(
+                                        SizeConfig.safeBlockHorizontal * 1),
+                                  ),
+                                  textStyle: TextStyle(
+                                    color: (Theme.of(context)
+                                                .scaffoldBackgroundColor ==
+                                            Colors.white
+                                        ? Colors.black
+                                        : Colors.white),
+                                    fontSize:
+                                        SizeConfig.safeBlockHorizontal * 3.4,
+                                    fontFamily: "Circular Std",
+                                  ),
+                                  child: GestureDetector(
+                                    onTap: () => _playAnimation(),
+                                    child: SizedBox(
+                                      height:
+                                          SizeConfig.safeBlockHorizontal * 7,
+                                      width: SizeConfig.safeBlockHorizontal * 7,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(bottom: SizeConfig.safeBlockVertical*0.2),
+                                        child: FlareActor(
+                                          "assets/images/order_by.flr",
+                                          isPaused: orderPaused,
+                                          controller: _flrController,
+                                          animation: animInit,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                SizedBox(
+                                  width: SizeConfig.safeBlockHorizontal*2,
+                                ),
+                                Tooltip(
+                                  message: "Settings",
+                                  child: GestureDetector(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(bottom: SizeConfig.safeBlockVertical*0),
+                                      child: Icon(
+                                        Icons.tune,
+                                        size: SizeConfig.safeBlockHorizontal * 8.5,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
                           ],
                         ),
