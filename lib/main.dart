@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tasks/screens/tasks_screen.dart';
 import 'package:tasks/util/themes.dart';
+import 'package:tasks/util/shared_prefs_helper.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPrefs().init();
+  print(sharedPrefs.isSortingByDate);
   runApp(MaterialApp(
     home: MyApp(),
     debugShowCheckedModeBanner: false,

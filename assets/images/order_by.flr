@@ -509,7 +509,17 @@
 							"opacity": [
 								[
 									{
+										"time": 0,
+										"interpolatorType": 1,
+										"value": 100
+									},
+									{
 										"time": 0.13333333333333333,
+										"interpolatorType": 1,
+										"value": 100
+									},
+									{
+										"time": 0.15,
 										"interpolatorType": 1,
 										"value": 0
 									}
@@ -585,7 +595,17 @@
 							"opacity": [
 								[
 									{
+										"time": 0,
+										"interpolatorType": 1,
+										"value": 100
+									},
+									{
 										"time": 0.13333333333333333,
+										"interpolatorType": 1,
+										"value": 100
+									},
+									{
+										"time": 0.15,
 										"interpolatorType": 1,
 										"value": 0
 									}

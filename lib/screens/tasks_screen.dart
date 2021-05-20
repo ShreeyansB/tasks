@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tasks/models/task_model.dart';
 import 'package:tasks/screens/add_task_screen.dart';
+import 'package:tasks/screens/settings_screen.dart';
 import 'package:tasks/util/database_helper.dart';
 import 'package:tasks/util/size_config.dart';
 import 'package:tasks/util/themes.dart';
@@ -12,6 +13,8 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:tasks/util/shared_prefs_helper.dart';
+
 
 class TasksScreen extends StatefulWidget {
   @override
@@ -26,7 +29,7 @@ class _TasksScreenState extends State<TasksScreen> {
 
   FlareControls _flrController;
   bool orderPaused = true;
-  bool orderOnDate = false;
+  bool orderOnDate = sharedPrefs.isSortingByDate;
   String animInit;
 
   final List<double> invertMatrix = [
@@ -50,7 +53,6 @@ class _TasksScreenState extends State<TasksScreen> {
     final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
 
     tz.setLocalLocation(tz.getLocation(timeZoneName));
-    print(tz.local);
   }
 
   Future notifSelected(String payload) async {
@@ -65,8 +67,6 @@ class _TasksScreenState extends State<TasksScreen> {
     var notifDetails =
         NotificationDetails(android: androidDetails, iOS: iOSDetails);
 
-    tz.TZDateTime tt = tz.TZDateTime.from(task.date, tz.local);
-    print(tt.toString());
 
     flutterNotif.zonedSchedule(
         task.id,
@@ -118,6 +118,7 @@ class _TasksScreenState extends State<TasksScreen> {
   void _playAnimation() {
     setState(() {
       orderPaused = false;
+      _updateTaskList();
     });
     if (orderOnDate) {
       _flrController.play("DateToPri");
@@ -126,6 +127,9 @@ class _TasksScreenState extends State<TasksScreen> {
       _flrController.play("PriToDate");
       orderOnDate = true;
     }
+      sharedPrefs.isSortingByDate = orderOnDate;
+      print(orderOnDate);
+      print(sharedPrefs.isSortingByDate);
   }
 
   @override
@@ -278,7 +282,7 @@ class _TasksScreenState extends State<TasksScreen> {
                                   ),
                                 ),
                                 SizedBox(
-                                  width: SizeConfig.safeBlockHorizontal * 2,
+                                  width: SizeConfig.safeBlockHorizontal * 3,
                                 ),
                                 Tooltip(
                                   message: "Settings",
@@ -302,6 +306,18 @@ class _TasksScreenState extends State<TasksScreen> {
                                     fontFamily: "Circular Std",
                                   ),
                                   child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.fade,
+                  child: SettingsScreen(),
+                  curve: Curves.easeInCubic,
+                  duration: Duration(milliseconds: 300),
+                  reverseDuration: Duration(milliseconds: 300),
+                ),
+              );
+                                    },
                                     child: Padding(
                                       padding: EdgeInsets.only(
                                           bottom:

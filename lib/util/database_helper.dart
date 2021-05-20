@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tasks/models/task_model.dart';
+import 'package:tasks/util/shared_prefs_helper.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._instance();
@@ -82,9 +83,13 @@ class DatabaseHelper {
     taskMapList.forEach((taskMap) {
       taskList.add(Task.fromMap(taskMap));
     });
-    // taskList.sort((taskA, taskB) => taskA.date.compareTo(taskB.date));
 
-    taskList.sort(priorityComparator);
+    if (sharedPrefs.isSortingByDate) {
+      taskList.sort((taskA, taskB) => taskA.date.compareTo(taskB.date));
+    } else {
+      taskList.sort(priorityComparator);
+    }
+
     return taskList;
   }
 
