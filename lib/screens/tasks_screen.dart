@@ -29,6 +29,22 @@ class _TasksScreenState extends State<TasksScreen> {
   bool orderOnDate = false;
   String animInit;
 
+  final List<double> invertMatrix = [
+    //R  G   B    A  Const
+    -1, 0, 0, 0, 255, //
+    0, -1, 0, 0, 255, //
+    0, 0, -1, 0, 255, //
+    0, 0, 0, 1, 0, //
+  ];
+
+  final List<double> identityMatrix = [
+    //R  G   B    A  Const
+    1, 0, 0, 0, 0, //
+    0, 1, 0, 0, 0, //
+    0, 0, 1, 0, 0, //
+    0, 0, 0, 1, 0, //
+  ];
+
   Future getTimeZone() async {
     tz.initializeTimeZones();
     final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
@@ -238,29 +254,62 @@ class _TasksScreenState extends State<TasksScreen> {
                                           SizeConfig.safeBlockHorizontal * 7,
                                       width: SizeConfig.safeBlockHorizontal * 7,
                                       child: Padding(
-                                        padding: EdgeInsets.only(bottom: SizeConfig.safeBlockVertical*0.2),
-                                        child: FlareActor(
-                                          "assets/images/order_by.flr",
-                                          isPaused: orderPaused,
-                                          controller: _flrController,
-                                          animation: animInit,
-                                          fit: BoxFit.contain,
+                                        padding: EdgeInsets.only(
+                                            bottom:
+                                                SizeConfig.safeBlockVertical *
+                                                    0.2),
+                                        child: ColorFiltered(
+                                          colorFilter: (Theme.of(context)
+                                                      .scaffoldBackgroundColor ==
+                                                  Colors.white
+                                              ? ColorFilter.matrix(invertMatrix)
+                                              : ColorFilter.matrix(
+                                                  identityMatrix)),
+                                          child: FlareActor(
+                                            "assets/images/order_by.flr",
+                                            isPaused: orderPaused,
+                                            controller: _flrController,
+                                            animation: animInit,
+                                            fit: BoxFit.contain,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
                                 SizedBox(
-                                  width: SizeConfig.safeBlockHorizontal*2,
+                                  width: SizeConfig.safeBlockHorizontal * 2,
                                 ),
                                 Tooltip(
                                   message: "Settings",
+                                  decoration: BoxDecoration(
+                                    color: (Theme.of(context)
+                                                .scaffoldBackgroundColor ==
+                                            Colors.white
+                                        ? Color(0xfff2f3f3)
+                                        : Color(0xff1c1c1c)),
+                                    borderRadius: BorderRadius.circular(
+                                        SizeConfig.safeBlockHorizontal * 1),
+                                  ),
+                                  textStyle: TextStyle(
+                                    color: (Theme.of(context)
+                                                .scaffoldBackgroundColor ==
+                                            Colors.white
+                                        ? Colors.black
+                                        : Colors.white),
+                                    fontSize:
+                                        SizeConfig.safeBlockHorizontal * 3.4,
+                                    fontFamily: "Circular Std",
+                                  ),
                                   child: GestureDetector(
                                     child: Padding(
-                                      padding: EdgeInsets.only(bottom: SizeConfig.safeBlockVertical*0),
+                                      padding: EdgeInsets.only(
+                                          bottom:
+                                              SizeConfig.safeBlockVertical * 0),
                                       child: Icon(
                                         Icons.tune,
-                                        size: SizeConfig.safeBlockHorizontal * 8.5,
+                                        size: SizeConfig.safeBlockHorizontal *
+                                            8.5,
                                       ),
                                     ),
                                   ),
