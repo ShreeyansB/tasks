@@ -3,7 +3,7 @@ import 'package:tasks/util/size_config.dart';
 
 Color kPrimaryColor = Color(0xffff495c);
 
-class MyThemes {
+class MyThemes{
   static double themeblockhz;
   static double themeblockvt;
   static BuildContext myContext;
@@ -72,5 +72,17 @@ class MyThemes {
     fontSize: themeblockvt * 4,
     fontFamily: "Circular Std",
     fontWeight: FontWeight.w700,
+  );
+
+  static TextStyle settingsHeadTextStyle = TextStyle(
+    fontSize: SizeConfig.safeBlockVertical * 2.7,
+    fontFamily: "Circular Std",
+    fontWeight: FontWeight.w700,
+  );
+
+  static TextStyle settingsSubtitleTextStyle = TextStyle(
+    fontSize: SizeConfig.safeBlockVertical * 2.2,
+    fontFamily: "Circular Std",
+    fontWeight: FontWeight.w600,
   );
 }

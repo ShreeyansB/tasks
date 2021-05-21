@@ -17,6 +17,7 @@ dependencies:
   page_transition: ^2.0.2
   flare_flutter: ^3.0.0
   shared_preferences: ^2.0.5
+  flutter_phoenix: ^1.0.0
 
   flutter:
     sdk: flutter
@@ -47,3 +48,4 @@ flutter:
           weight: 600
         - asset: "assets/fonts/CircularStd-Black.ttf"
           weight: 700
+

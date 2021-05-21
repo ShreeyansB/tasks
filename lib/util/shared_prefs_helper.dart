@@ -19,6 +19,14 @@ class SharedPrefs {
   set isSortingByDate(bool value) {
     _sharedPrefs.setBool("isSortingByDate", value);
   }
+
+  // Theme Setting
+  String get appTheme => _sharedPrefs.getString("appTheme") ?? "Auto";
+
+  set appTheme(String value) {
+    _sharedPrefs.setString("appTheme", value);
+  }
 }
+
 
 final sharedPrefs = SharedPrefs();

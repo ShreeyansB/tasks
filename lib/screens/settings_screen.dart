@@ -1,14 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:tasks/util/size_config.dart';
 import 'package:tasks/util/themes.dart';
 import 'package:tasks/util/shared_prefs_helper.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
+enum ThemeType { Auto, Light, Dark }
+
 class _SettingsScreenState extends State<SettingsScreen> {
+  ThemeType themeRadioType = ThemeType.Light;
+
+  String themeEnumToString(ThemeType value) {
+    if (value == ThemeType.Auto)
+      return "Auto";
+    else if (value == ThemeType.Light)
+      return "Light";
+    else
+      return "Dark";
+  }
+
+  ThemeType themeStringToEnum(String value) {
+    if (value == "Auto")
+      return ThemeType.Auto;
+    else if (value == "Light")
+      return ThemeType.Light;
+    else
+      return ThemeType.Dark;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    themeRadioType = themeStringToEnum(sharedPrefs.appTheme);
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -51,10 +81,201 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Padding(
                   padding: EdgeInsets.only(
                       left: SizeConfig.safeBlockHorizontal * 8.6,
-                      top: SizeConfig.safeBlockVertical * 2),
-                  child: Text(
-                    "To be implemented...",
-                    style: MyThemes.fieldHeadTextStyle,
+                      top: SizeConfig.safeBlockVertical * 3),
+                  child: GestureDetector(
+                    onTap: () async {
+                      await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return StatefulBuilder(
+                              builder: (context, setState) {
+                                return AlertDialog(
+                                  backgroundColor: Theme.of(context)
+                                              .scaffoldBackgroundColor ==
+                                          Colors.white
+                                      ? Colors.grey.shade50
+                                      : Color(0xff0f0f0f),
+                                  title: Text(
+                                    "Select Theme",
+                                    style: MyThemes.settingsHeadTextStyle
+                                        .copyWith(
+                                            fontSize:
+                                                SizeConfig.safeBlockVertical *
+                                                    2.6,
+                                            fontWeight: FontWeight.w500),
+                                  ),
+                                  contentPadding: EdgeInsets.only(
+                                      left: SizeConfig.safeBlockHorizontal * 4,
+                                      right: SizeConfig.safeBlockHorizontal * 4,
+                                      top: SizeConfig.safeBlockVertical * 1),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Theme(
+                                        data: Theme.of(context).copyWith(
+                                            splashColor: Colors.transparent,
+                                            highlightColor: (Theme.of(context)
+                                                        .scaffoldBackgroundColor ==
+                                                    Colors.white
+                                                ? Colors.black12
+                                                : Colors.white
+                                                    .withOpacity(0.05))),
+                                        child: RadioListTile<ThemeType>(
+                                            contentPadding: EdgeInsets.all(0),
+                                            value: ThemeType.Auto,
+                                            groupValue: themeRadioType,
+                                            activeColor:
+                                                Theme.of(context).primaryColor,
+                                            title: Text(
+                                              "Auto",
+                                              style: MyThemes
+                                                  .settingsSubtitleTextStyle
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      fontSize: SizeConfig
+                                                              .safeBlockVertical *
+                                                          2.1),
+                                            ),
+                                            onChanged: (val) {
+                                              setState(() {
+                                                themeRadioType = val;
+                                              });
+                                              print(themeRadioType);
+                                            }),
+                                      ),
+                                      Theme(
+                                        data: Theme.of(context).copyWith(
+                                            splashColor: Colors.transparent,
+                                            highlightColor: (Theme.of(context)
+                                                        .scaffoldBackgroundColor ==
+                                                    Colors.white
+                                                ? Colors.black12
+                                                : Colors.white
+                                                    .withOpacity(0.05))),
+                                        child: RadioListTile<ThemeType>(
+                                            value: ThemeType.Light,
+                                            contentPadding: EdgeInsets.all(0),
+                                            groupValue: themeRadioType,
+                                            activeColor:
+                                                Theme.of(context).primaryColor,
+                                            title: Text(
+                                              "Light",
+                                              style: MyThemes
+                                                  .settingsSubtitleTextStyle
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      fontSize: SizeConfig
+                                                              .safeBlockVertical *
+                                                          2.1),
+                                            ),
+                                            onChanged: (val) {
+                                              setState(() {
+                                                themeRadioType = val;
+                                              });
+                                              print(themeRadioType);
+                                            }),
+                                      ),
+                                      Theme(
+                                        data: Theme.of(context).copyWith(
+                                            splashColor: Colors.transparent,
+                                            highlightColor: (Theme.of(context)
+                                                        .scaffoldBackgroundColor ==
+                                                    Colors.white
+                                                ? Colors.black12
+                                                : Colors.white
+                                                    .withOpacity(0.05))),
+                                        child: RadioListTile<ThemeType>(
+                                            value: ThemeType.Dark,
+                                            contentPadding: EdgeInsets.all(0),
+                                            groupValue: themeRadioType,
+                                            activeColor:
+                                                Theme.of(context).primaryColor,
+                                            title: Text(
+                                              "Dark",
+                                              style: MyThemes
+                                                  .settingsSubtitleTextStyle
+                                                  .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      fontSize: SizeConfig
+                                                              .safeBlockVertical *
+                                                          2.1),
+                                            ),
+                                            onChanged: (val) {
+                                              setState(() {
+                                                themeRadioType = val;
+                                              });
+                                              print(themeRadioType);
+                                            }),
+                                      )
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      child: Text(
+                                        "OK",
+                                        style: TextStyle(
+                                            fontSize:
+                                                SizeConfig.safeBlockVertical *
+                                                    1.9,
+                                            fontFamily: "Circular Std",
+                                            letterSpacing: 1.5),
+                                      ),
+                                      onPressed: () {
+                                        sharedPrefs.appTheme =
+                                            themeEnumToString(themeRadioType);
+                                        print(sharedPrefs.appTheme);
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          });
+                      setState(() {});
+                      Phoenix.rebirth(context);
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: SettingsScreen(),
+                          curve: Curves.easeInCubic,
+                          duration: Duration(milliseconds: 300),
+                          reverseDuration: Duration(milliseconds: 300),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          vertical: SizeConfig.safeBlockVertical * 1),
+                      width: SizeConfig.safeBlockHorizontal * 90,
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "App Theme",
+                            style: MyThemes.settingsHeadTextStyle,
+                          ),
+                          SizedBox(
+                            height: SizeConfig.safeBlockVertical * 0.7,
+                          ),
+                          Text(
+                            themeEnumToString(themeRadioType),
+                            style: MyThemes.settingsSubtitleTextStyle.copyWith(
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor ==
+                                            Colors.white
+                                        ? Colors.grey
+                                        : Colors.grey.shade600),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],
