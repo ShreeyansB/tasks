@@ -13,10 +13,7 @@ void main() async {
   print(sharedPrefs.appTheme);
 
   runApp(Phoenix(
-      child: MaterialApp(
-      home: MyApp(),
-      debugShowCheckedModeBanner: false,
-    ),
+    child: MyApp(),
   ));
 }
 
@@ -93,8 +90,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    setSystemComponentsTheme(context);
-
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => setSystemComponentsTheme(context));
     return MaterialApp(
       title: 'Tasks',
       debugShowCheckedModeBanner: false,
