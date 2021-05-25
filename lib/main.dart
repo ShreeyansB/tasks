@@ -20,9 +20,12 @@ void main() async {
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
-  void setSystemComponentsTheme(BuildContext context) {
+  void setSystemComponentsTheme() {
+
+    var brightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness;
+    print(brightness);
     if (sharedPrefs.appTheme == "Auto") {
-      if (MediaQuery.of(context).platformBrightness == Brightness.light) {
+      if (brightness == Brightness.light) {
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           systemNavigationBarColor: Colors.white, // navigation bar color
           statusBarColor: Colors.white, // status bar color
@@ -88,10 +91,10 @@ class MyApp extends StatelessWidget {
       return MyThemes.myDarkTheme;
   }
 
+
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => setSystemComponentsTheme(context));
+    setSystemComponentsTheme();
     return MaterialApp(
       title: 'Tasks',
       debugShowCheckedModeBanner: false,
