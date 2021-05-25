@@ -34,18 +34,34 @@ class DatabaseHelper {
   }
 
   Comparator<Task> priorityComparator = (a, b) {
-    if (switchPriority(a.priority) > switchPriority(b.priority)) {
-      return -1;
-    } else if (switchPriority(a.priority) < switchPriority(b.priority)) {
-      return 1;
-    } else {
-      if (a.date.difference(b.date).inSeconds > 0) {
+    if (a.status == b.status) {
+      if (switchPriority(a.priority) > switchPriority(b.priority)) {
         return -1;
-      } else if (a.date.difference(b.date).inSeconds < 0) {
+      } else if (switchPriority(a.priority) < switchPriority(b.priority)) {
         return 1;
       } else {
-        return 0;
+        if (a.date.difference(b.date).inSeconds > 0) {
+          return -1;
+        } else if (a.date.difference(b.date).inSeconds < 0) {
+          return 1;
+        } else {
+          return 0;
+        }
       }
+    } else if (a.status < b.status) {
+      return -1;
+    } else {
+      return 1;
+    }
+  };
+
+  Comparator<Task> dateComparator = (a, b) {
+    if (a.status == b.status) {
+      return a.date.compareTo(b.date);
+    } else if (a.status < b.status) {
+      return -1;
+    } else {
+      return 1;
     }
   };
 
@@ -85,7 +101,7 @@ class DatabaseHelper {
     });
 
     if (sharedPrefs.isSortingByDate) {
-      taskList.sort((taskA, taskB) => taskA.date.compareTo(taskB.date));
+      taskList.sort(dateComparator);
     } else {
       taskList.sort(priorityComparator);
     }
