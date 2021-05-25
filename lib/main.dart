@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:tasks/screens/tasks_screen.dart';
 import 'package:tasks/util/themes.dart';
 import 'package:tasks/util/shared_prefs_helper.dart';
+import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,15 +12,13 @@ void main() async {
   print(sharedPrefs.isSortingByDate);
   print(sharedPrefs.appTheme);
 
-  runApp(Phoenix(
-    child: MyApp(),
-  ));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
-  void setSystemComponentsTheme() {
+  static void setSystemComponentsTheme() {
 
     var brightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness;
     print(brightness);
@@ -95,7 +93,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     setSystemComponentsTheme();
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Tasks',
       debugShowCheckedModeBanner: false,
       theme: setPrimTheme(),

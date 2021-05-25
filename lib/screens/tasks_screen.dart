@@ -15,7 +15,6 @@ import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:tasks/util/shared_prefs_helper.dart';
 
-
 class TasksScreen extends StatefulWidget {
   @override
   _TasksScreenState createState() => _TasksScreenState();
@@ -66,7 +65,6 @@ class _TasksScreenState extends State<TasksScreen> {
     var iOSDetails = IOSNotificationDetails();
     var notifDetails =
         NotificationDetails(android: androidDetails, iOS: iOSDetails);
-
 
     flutterNotif.zonedSchedule(
         task.id,
@@ -127,9 +125,9 @@ class _TasksScreenState extends State<TasksScreen> {
       _flrController.play("PriToDate");
       orderOnDate = true;
     }
-      sharedPrefs.isSortingByDate = orderOnDate;
-      print(orderOnDate);
-      print(sharedPrefs.isSortingByDate);
+    sharedPrefs.isSortingByDate = orderOnDate;
+    print(orderOnDate);
+    print(sharedPrefs.isSortingByDate);
   }
 
   @override
@@ -308,15 +306,16 @@ class _TasksScreenState extends State<TasksScreen> {
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.push(
-                context,
-                PageTransition(
-                  type: PageTransitionType.fade,
-                  child: SettingsScreen(),
-                  curve: Curves.easeInCubic,
-                  duration: Duration(milliseconds: 300),
-                  reverseDuration: Duration(milliseconds: 300),
-                ),
-              );
+                                        context,
+                                        PageTransition(
+                                          type: PageTransitionType.fade,
+                                          child: SettingsScreen(),
+                                          curve: Curves.easeInCubic,
+                                          duration: Duration(milliseconds: 300),
+                                          reverseDuration:
+                                              Duration(milliseconds: 300),
+                                        ),
+                                      );
                                     },
                                     child: Padding(
                                       padding: EdgeInsets.only(

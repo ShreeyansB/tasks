@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:tasks/main.dart';
 import 'package:tasks/util/size_config.dart';
 import 'package:tasks/util/themes.dart';
 import 'package:tasks/util/shared_prefs_helper.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:get/get.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -11,6 +11,15 @@ class SettingsScreen extends StatefulWidget {
 }
 
 enum ThemeType { Auto, Light, Dark }
+
+ThemeMode getThemeMode(ThemeType theme) {
+  if (theme == ThemeType.Auto)
+    return ThemeMode.system;
+  else if (theme == ThemeType.Light)
+    return ThemeMode.light;
+  else
+    return ThemeMode.dark;
+}
 
 class _SettingsScreenState extends State<SettingsScreen> {
   ThemeType themeRadioType = ThemeType.Light;
@@ -235,18 +244,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               },
                             );
                           });
+                      Get.changeThemeMode(getThemeMode(themeRadioType));
+                      MyApp.setSystemComponentsTheme();
                       setState(() {});
-                      Phoenix.rebirth(context);
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.fade,
-                          child: SettingsScreen(),
-                          curve: Curves.easeInCubic,
-                          duration: Duration(milliseconds: 300),
-                          reverseDuration: Duration(milliseconds: 300),
-                        ),
-                      );
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(
