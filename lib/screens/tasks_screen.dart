@@ -1,6 +1,7 @@
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tasks/models/task_model.dart';
 import 'package:tasks/screens/add_task_screen.dart';
@@ -192,8 +193,9 @@ class _TasksScreenState extends State<TasksScreen> {
                   height: SizeConfig.safeBlockVertical * 0.5,
                   width: SizeConfig.safeBlockHorizontal * 40,
                   child: LinearProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(kPrimaryColor),
-                    backgroundColor: kPrimaryColor.withOpacity(0.3),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(MyThemes.kPrimaryColor),
+                    backgroundColor: MyThemes.kPrimaryColor.withOpacity(0.3),
                     value: null,
                   ),
                 ),
@@ -305,17 +307,23 @@ class _TasksScreenState extends State<TasksScreen> {
                                   ),
                                   child: GestureDetector(
                                     onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        PageTransition(
-                                          type: PageTransitionType.fade,
-                                          child: SettingsScreen(),
-                                          curve: Curves.easeInCubic,
-                                          duration: Duration(milliseconds: 300),
-                                          reverseDuration:
-                                              Duration(milliseconds: 300),
-                                        ),
+                                      Get.to(
+                                        () => SettingsScreen(),
+                                        transition: Transition.fadeIn,
+                                        curve: Curves.easeInCubic,
+                                        duration: Duration(milliseconds: 300),
                                       );
+                                      // Navigator.push(
+                                      //   context,
+                                      //   PageTransition(
+                                      //     type: PageTransitionType.fade,
+                                      //     child: SettingsScreen(),
+                                      //     curve: Curves.easeInCubic,
+                                      //     duration: Duration(milliseconds: 300),
+                                      //     reverseDuration:
+                                      //         Duration(milliseconds: 300),
+                                      //   ),
+                                      // );
                                     },
                                     child: Padding(
                                       padding: EdgeInsets.only(
@@ -387,11 +395,11 @@ class _TaskTileState extends State<TaskTile> {
 
   Color _setPriorityColor(Task task) {
     if (task.priority == "High") {
-      return kPrimaryColor;
+      return MyThemes.kPrimaryColor;
     } else if (task.priority == "Medium") {
-      return kPrimaryColor.withOpacity(0.84);
+      return MyThemes.kPrimaryColor.withOpacity(0.84);
     } else {
-      return kPrimaryColor.withOpacity(0.72);
+      return MyThemes.kPrimaryColor.withOpacity(0.72);
     }
   }
 

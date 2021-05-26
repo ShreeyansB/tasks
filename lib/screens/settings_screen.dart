@@ -11,6 +11,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 enum ThemeType { Auto, Light, Dark }
+var selectedColor = 0.obs;
 
 ThemeMode getThemeMode(ThemeType theme) {
   if (theme == ThemeType.Auto)
@@ -42,10 +43,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return ThemeType.Dark;
   }
 
+  initColor() {
+    String color = sharedPrefs.primColor;
+    int index = 0;
+    for (index = 0; index < MyThemes.themeColors.length; index++) {
+      if (MyThemes.themeColors[index] == color) {
+        break;
+      }
+    }
+    return index;
+  }
+
   @override
   void initState() {
     super.initState();
     themeRadioType = themeStringToEnum(sharedPrefs.appTheme);
+    selectedColor.value = initColor();
+    //print("init color: "+initColor().toString());
   }
 
   @override
@@ -68,7 +82,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     left: SizeConfig.safeBlockHorizontal * 3.6,
                   ),
                   child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Get.back();
+                    },
                     child: Icon(
                       Icons.arrow_back_ios_rounded,
                       size: SizeConfig.safeBlockVertical * 4,
@@ -235,7 +251,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       onPressed: () {
                                         sharedPrefs.appTheme =
                                             themeEnumToString(themeRadioType);
-                                        print(sharedPrefs.appTheme);
+                                        print("Pressed OK: " +
+                                            sharedPrefs.appTheme);
                                         Navigator.of(context).pop();
                                       },
                                     ),
@@ -245,6 +262,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             );
                           });
                       Get.changeThemeMode(getThemeMode(themeRadioType));
+                      Get.forceAppUpdate();
                       MyApp.setSystemComponentsTheme();
                       setState(() {});
                     },
@@ -278,7 +296,105 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: SizeConfig.safeBlockHorizontal * 8.6,
+                      top: SizeConfig.safeBlockVertical * 3),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                        vertical: SizeConfig.safeBlockVertical * 1),
+                    width: SizeConfig.safeBlockHorizontal * 90,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Theme Color",
+                          style: MyThemes.settingsHeadTextStyle,
+                        ),
+                        SizedBox(
+                          height: SizeConfig.safeBlockVertical * 1.5,
+                        ),
+                        Container(
+                          height: SizeConfig.safeBlockVertical * 7,
+                          padding: EdgeInsets.only(
+                              right: SizeConfig.safeBlockHorizontal * 10,
+                              left: SizeConfig.safeBlockHorizontal * 0.7),
+                          child: ListView.builder(
+                            itemCount: MyThemes.themeColors.length,
+                            itemBuilder: (context, index) {
+                              return ColorTile(
+                                color: MyThemes.themeColors[index].toColor(),
+                                index: index,
+                              );
+                            },
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: true,
+                            primary: false,
+                            physics: BouncingScrollPhysics(),
+                            padding: EdgeInsets.zero,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                )
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ColorTile extends StatefulWidget {
+  final Color color;
+  final int index;
+  ColorTile({@required this.color, @required this.index});
+
+  @override
+  _ColorTileState createState() => _ColorTileState();
+}
+
+class _ColorTileState extends State<ColorTile> {
+  bool state = false;
+
+  bool checkState(RxInt value) {
+    if (value.value == widget.index) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Container(
+        padding: EdgeInsets.zero,
+        margin: EdgeInsets.zero,
+        height: SizeConfig.safeBlockVertical * 4,
+        width: SizeConfig.safeBlockHorizontal * 17,
+        color: widget.color,
+        child: Center(
+          child: SizedBox(
+            child: Transform.scale(
+              scale: 1.5,
+              child: Checkbox(
+                activeColor: Colors.transparent,
+                checkColor: Theme.of(context).scaffoldBackgroundColor,
+                fillColor: MaterialStateProperty.all(Colors.transparent),
+                value: checkState(selectedColor),
+                onChanged: (value) {
+                  if (value == true) {
+                    selectedColor.value = widget.index;
+                    sharedPrefs.primColor = MyThemes.themeColors[selectedColor.value];
+                    MyThemes.initPrimaryColor();
+                  }
+                },
+              ),
             ),
           ),
         ),

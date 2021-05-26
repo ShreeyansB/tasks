@@ -26,6 +26,12 @@ class SharedPrefs {
   set appTheme(String value) {
     _sharedPrefs.setString("appTheme", value);
   }
+
+  String get primColor => _sharedPrefs.getString("primColor") ?? "#ff495c";
+
+  set primColor(String value) {
+    _sharedPrefs.setString("primColor", value);
+  }
 }
 
 

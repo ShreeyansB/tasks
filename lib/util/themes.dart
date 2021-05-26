@@ -1,12 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:tasks/util/shared_prefs_helper.dart';
 import 'package:tasks/util/size_config.dart';
 
-Color kPrimaryColor = Color(0xffff495c);
+extension ColorExtension on String {
+  toColor() {
+    var hexColor = this.replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    if (hexColor.length == 8) {
+      return Color(int.parse("0x$hexColor"));
+    }
+  }
+}
 
-class MyThemes{
+class MyThemes {
   static double themeblockhz;
   static double themeblockvt;
   static BuildContext myContext;
+  static Color kPrimaryColor;
+
+  static List<String> themeColors = [
+    "#ff495c", //red
+    "#eb49ac", // pink
+    "#a944e3", // purple
+    "#4056ed", // violet
+    "#269fe0", //blue
+    "#22c99a", // teal
+    "#FFA000", // yellow
+    "#ff6d49", // orange
+  ];
+
+  static void initPrimaryColor() {
+    MyThemes.kPrimaryColor = sharedPrefs.primColor.toColor();
+  }
 
   void initBlock(BuildContext context) {
     myContext = context;
@@ -17,12 +44,12 @@ class MyThemes{
 
   static ThemeData myLightTheme = ThemeData.light().copyWith(
     scaffoldBackgroundColor: Colors.white,
-    primaryColor: kPrimaryColor,
-    colorScheme: ColorScheme.light(primary: kPrimaryColor),
+    primaryColor: MyThemes.kPrimaryColor,
+    colorScheme: ColorScheme.light(primary: MyThemes.kPrimaryColor),
     chipTheme: ThemeData.light().chipTheme.copyWith(
           backgroundColor: Color(0xfff2f3f3),
           secondaryLabelStyle: TextStyle(color: Colors.white),
-          secondarySelectedColor: kPrimaryColor,
+          secondarySelectedColor: MyThemes.kPrimaryColor,
         ),
     floatingActionButtonTheme:
         ThemeData.light().floatingActionButtonTheme.copyWith(elevation: 0),
@@ -31,12 +58,12 @@ class MyThemes{
 
   static ThemeData myDarkTheme = ThemeData.dark().copyWith(
     scaffoldBackgroundColor: Colors.black,
-    primaryColor: kPrimaryColor,
-    colorScheme: ColorScheme.dark(primary: kPrimaryColor),
+    primaryColor: MyThemes.kPrimaryColor,
+    colorScheme: ColorScheme.dark(primary: MyThemes.kPrimaryColor),
     chipTheme: ThemeData.dark().chipTheme.copyWith(
           backgroundColor: Color(0xff1c1c1c),
           secondaryLabelStyle: TextStyle(color: Colors.black),
-          secondarySelectedColor: kPrimaryColor,
+          secondarySelectedColor: MyThemes.kPrimaryColor,
         ),
     floatingActionButtonTheme:
         ThemeData.dark().floatingActionButtonTheme.copyWith(elevation: 0),

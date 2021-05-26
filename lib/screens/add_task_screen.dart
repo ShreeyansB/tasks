@@ -663,7 +663,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     style: TextButton.styleFrom(
                                       primary: Theme.of(context)
                                           .scaffoldBackgroundColor,
-                                      backgroundColor: kPrimaryColor,
+                                      backgroundColor: MyThemes.kPrimaryColor,
                                       animationDuration:
                                           Duration(milliseconds: 10),
                                       shape: RoundedRectangleBorder(

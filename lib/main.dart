@@ -8,10 +8,11 @@ import 'package:get/get.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPrefs().init();
+  MyThemes.initPrimaryColor();
   print("Main init shared prefs:");
   print(sharedPrefs.isSortingByDate);
   print(sharedPrefs.appTheme);
-
+  
   runApp(MyApp());
 }
 
