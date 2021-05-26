@@ -377,7 +377,22 @@ class _ColorTileState extends State<ColorTile> {
         margin: EdgeInsets.zero,
         height: SizeConfig.safeBlockVertical * 4,
         width: SizeConfig.safeBlockHorizontal * 17,
-        color: widget.color,
+        decoration: BoxDecoration(
+            color: widget.color,
+            borderRadius: BorderRadius.only(
+              topLeft: (widget.index == 0
+                  ? Radius.circular(SizeConfig.safeBlockVertical * 1.2)
+                  : Radius.zero),
+              bottomLeft: (widget.index == 0
+                  ? Radius.circular(SizeConfig.safeBlockVertical * 1.2)
+                  : Radius.zero),
+              bottomRight: (widget.index == 7
+                  ? Radius.circular(SizeConfig.safeBlockVertical * 1.2)
+                  : Radius.zero),
+              topRight: (widget.index == 7
+                  ? Radius.circular(SizeConfig.safeBlockVertical * 1.2)
+                  : Radius.zero),
+            )),
         child: Center(
           child: SizedBox(
             child: Transform.scale(
@@ -390,7 +405,8 @@ class _ColorTileState extends State<ColorTile> {
                 onChanged: (value) {
                   if (value == true) {
                     selectedColor.value = widget.index;
-                    sharedPrefs.primColor = MyThemes.themeColors[selectedColor.value];
+                    sharedPrefs.primColor =
+                        MyThemes.themeColors[selectedColor.value];
                     MyThemes.initPrimaryColor();
                   }
                 },

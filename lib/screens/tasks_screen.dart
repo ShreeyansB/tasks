@@ -158,30 +158,32 @@ class _TasksScreenState extends State<TasksScreen> {
               ),
             ),
           ),
-          child: FloatingActionButton(
-            tooltip: "Add Task",
-            backgroundColor: Theme.of(context).primaryColor,
-            child: Text(
-              "+",
-              style: TextStyle(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  fontSize: SizeConfig.safeBlockVertical * 4.5,
-                  fontFamily: "Circular Std"),
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                PageTransition(
-                  type: PageTransitionType.fade,
-                  child: AddTaskScreen(
-                    updateListCallback: _updateTaskList,
+          child: Obx(
+            () => FloatingActionButton(
+              tooltip: "Add Task",
+              backgroundColor: MyThemes.kPrimaryColor.value,
+              child: Text(
+                "+",
+                style: TextStyle(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    fontSize: SizeConfig.safeBlockVertical * 4.5,
+                    fontFamily: "Circular Std"),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.fade,
+                    child: AddTaskScreen(
+                      updateListCallback: _updateTaskList,
+                    ),
+                    curve: Curves.easeInCubic,
+                    duration: Duration(milliseconds: 300),
+                    reverseDuration: Duration(milliseconds: 300),
                   ),
-                  curve: Curves.easeInCubic,
-                  duration: Duration(milliseconds: 300),
-                  reverseDuration: Duration(milliseconds: 300),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
         body: FutureBuilder<List<Task>>(
@@ -193,9 +195,10 @@ class _TasksScreenState extends State<TasksScreen> {
                   height: SizeConfig.safeBlockVertical * 0.5,
                   width: SizeConfig.safeBlockHorizontal * 40,
                   child: LinearProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(MyThemes.kPrimaryColor),
-                    backgroundColor: MyThemes.kPrimaryColor.withOpacity(0.3),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        MyThemes.kPrimaryColor.value),
+                    backgroundColor:
+                        MyThemes.kPrimaryColor.value.withOpacity(0.3),
                     value: null,
                   ),
                 ),
@@ -395,105 +398,109 @@ class _TaskTileState extends State<TaskTile> {
 
   Color _setPriorityColor(Task task) {
     if (task.priority == "High") {
-      return MyThemes.kPrimaryColor;
+      return MyThemes.kPrimaryColor.value;
     } else if (task.priority == "Medium") {
-      return MyThemes.kPrimaryColor.withOpacity(0.84);
+      return MyThemes.kPrimaryColor.value.withOpacity(0.84);
     } else {
-      return MyThemes.kPrimaryColor.withOpacity(0.72);
+      return MyThemes.kPrimaryColor.value.withOpacity(0.72);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(
-              top: SizeConfig.safeBlockVertical * 1.2,
-              bottom: SizeConfig.safeBlockVertical * 1.2,
-              left: SizeConfig.safeBlockHorizontal * 5.6,
-              right: SizeConfig.safeBlockHorizontal * 4),
-          child: ListTile(
-            onTap: () {
-              Navigator.push(
-                context,
-                PageTransition(
-                  type: PageTransitionType.fade,
-                  child: AddTaskScreen(
-                    updateListCallback: widget.callback,
-                    task: widget.task,
+    return Obx(
+      () => Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+                top: SizeConfig.safeBlockVertical * 1.2,
+                bottom: SizeConfig.safeBlockVertical * 1.2,
+                left: SizeConfig.safeBlockHorizontal * 5.6,
+                right: SizeConfig.safeBlockHorizontal * 4),
+            child: ListTile(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.fade,
+                    child: AddTaskScreen(
+                      updateListCallback: widget.callback,
+                      task: widget.task,
+                    ),
+                    curve: Curves.easeInCubic,
+                    duration: Duration(milliseconds: 300),
+                    reverseDuration: Duration(milliseconds: 300),
                   ),
-                  curve: Curves.easeInCubic,
-                  duration: Duration(milliseconds: 300),
-                  reverseDuration: Duration(milliseconds: 300),
-                ),
-              );
-            },
-            title: Text(
-              widget.task.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontFamily: "Circular Std",
-                fontWeight: FontWeight.w500,
-                fontSize: SizeConfig.safeBlockVertical * 2.3,
-                decoration: widget.task.status == 0
-                    ? TextDecoration.none
-                    : TextDecoration.lineThrough,
-              ),
-            ),
-            subtitle: RichText(
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text:
-                        "${_dateFormatter.format(widget.task.date)} @ ${_timeFormatter.format(widget.task.date)} • ",
-                    style: TextStyle(
-                        fontFamily: "Circular Std",
-                        fontWeight: FontWeight.normal,
-                        fontSize: SizeConfig.safeBlockVertical * 1.7,
-                        color: Theme.of(context).scaffoldBackgroundColor ==
-                                Colors.white
-                            ? Colors.black.withOpacity(0.7)
-                            : Colors.white70,
-                        decoration: widget.task.status == 0
-                            ? TextDecoration.none
-                            : TextDecoration.lineThrough),
-                  ),
-                  TextSpan(
-                    text: "${widget.task.priority}",
-                    style: TextStyle(
-                        fontFamily: "Circular Std",
-                        fontWeight: FontWeight.normal,
-                        fontSize: SizeConfig.safeBlockVertical * 1.7,
-                        color: _setPriorityColor(widget.task),
-                        decoration: widget.task.status == 0
-                            ? TextDecoration.none
-                            : TextDecoration.lineThrough),
-                  ),
-                ],
-              ),
-            ),
-            trailing: Checkbox(
-              checkColor:
-                  Theme.of(context).scaffoldBackgroundColor == Colors.white
-                      ? Colors.white
-                      : Colors.black,
-              onChanged: (value) {
-                widget.task.status = value ? 1 : 0;
-                DatabaseHelper.instance.updateTask(widget.task);
-                widget.notifCallback(value, widget.task);
-                widget.callback();
-                setState(() {});
+                );
               },
-              activeColor: Theme.of(context).primaryColor,
-              value: widget.task.status == 1 ? true : false,
+              title: Text(
+                widget.task.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: "Circular Std",
+                  fontWeight: FontWeight.w500,
+                  fontSize: SizeConfig.safeBlockVertical * 2.3,
+                  decoration: widget.task.status == 0
+                      ? TextDecoration.none
+                      : TextDecoration.lineThrough,
+                ),
+              ),
+              subtitle: RichText(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text:
+                          "${_dateFormatter.format(widget.task.date)} @ ${_timeFormatter.format(widget.task.date)} • ",
+                      style: TextStyle(
+                          fontFamily: "Circular Std",
+                          fontWeight: FontWeight.normal,
+                          fontSize: SizeConfig.safeBlockVertical * 1.7,
+                          color: Theme.of(context).scaffoldBackgroundColor ==
+                                  Colors.white
+                              ? Colors.black.withOpacity(0.7)
+                              : Colors.white70,
+                          decoration: widget.task.status == 0
+                              ? TextDecoration.none
+                              : TextDecoration.lineThrough),
+                    ),
+                    TextSpan(
+                      text: "${widget.task.priority}",
+                      style: TextStyle(
+                          fontFamily: "Circular Std",
+                          fontWeight: FontWeight.normal,
+                          fontSize: SizeConfig.safeBlockVertical * 1.7,
+                          color: _setPriorityColor(widget.task),
+                          decoration: widget.task.status == 0
+                              ? TextDecoration.none
+                              : TextDecoration.lineThrough),
+                    ),
+                  ],
+                ),
+              ),
+              trailing: Obx(
+                () => Checkbox(
+                  checkColor:
+                      Theme.of(context).scaffoldBackgroundColor == Colors.white
+                          ? Colors.white
+                          : Colors.black,
+                  onChanged: (value) {
+                    widget.task.status = value ? 1 : 0;
+                    DatabaseHelper.instance.updateTask(widget.task);
+                    widget.notifCallback(value, widget.task);
+                    widget.callback();
+                    setState(() {});
+                  },
+                  activeColor: MyThemes.kPrimaryColor.value,
+                  value: widget.task.status == 1 ? true : false,
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
