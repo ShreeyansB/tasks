@@ -66,7 +66,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     var brightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window)
         .platformBrightness;
-        
+
     SizeConfig().init(context);
     return SafeArea(
       child: Scaffold(
@@ -243,13 +243,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   actions: [
                                     Theme(
                                       data: Theme.of(context).copyWith(
-                                          colorScheme:  brightness == Brightness.light
-                    ? (ColorScheme.light().copyWith(
-                        primary: MyThemes.kPrimaryColor.value,
-                      ))
-                    : ColorScheme.dark().copyWith(
-                        primary: MyThemes.kPrimaryColor.value,
-                      )),
+                                          colorScheme: brightness ==
+                                                  Brightness.light
+                                              ? (ColorScheme.light().copyWith(
+                                                  primary: MyThemes
+                                                      .kPrimaryColor.value,
+                                                ))
+                                              : ColorScheme.dark().copyWith(
+                                                  primary: MyThemes
+                                                      .kPrimaryColor.value,
+                                                )),
                                       child: TextButton(
                                         child: Text(
                                           "OK",
@@ -353,7 +356,109 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
-                )
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: SizeConfig.safeBlockHorizontal * 8.6,
+                      top: SizeConfig.safeBlockVertical * 3),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                        vertical: SizeConfig.safeBlockVertical * 1),
+                    width: SizeConfig.safeBlockHorizontal * 90,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Backup",
+                          style: MyThemes.settingsHeadTextStyle,
+                        ),
+                        SizedBox(
+                          height: SizeConfig.safeBlockVertical * 0.7,
+                        ),
+                        Text(
+                          "Take a backup of your current tasks",
+                          style: MyThemes.settingsSubtitleTextStyle.copyWith(
+                              color:
+                                  Theme.of(context).scaffoldBackgroundColor ==
+                                          Colors.white
+                                      ? Colors.grey
+                                      : Colors.grey.shade600),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: SizeConfig.safeBlockHorizontal * 8.6,
+                      top: SizeConfig.safeBlockVertical * 3,
+                      right: SizeConfig.safeBlockHorizontal * 11),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                        vertical: SizeConfig.safeBlockVertical * 1),
+                    width: SizeConfig.safeBlockHorizontal * 90,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Restore",
+                          style: MyThemes.settingsHeadTextStyle,
+                        ),
+                        SizedBox(
+                          height: SizeConfig.safeBlockVertical * 0.7,
+                        ),
+                        Text(
+                          "Restore and replace your current tasks with the backup",
+                          style: MyThemes.settingsSubtitleTextStyle.copyWith(
+                              color:
+                                  Theme.of(context).scaffoldBackgroundColor ==
+                                          Colors.white
+                                      ? Colors.grey
+                                      : Colors.grey.shade600),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: SizeConfig.safeBlockHorizontal * 8.6,
+                      top: SizeConfig.safeBlockVertical * 3,
+                      right: SizeConfig.safeBlockHorizontal * 11
+                      ),
+                  child: Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: SizeConfig.safeBlockVertical * 1),
+                        width: SizeConfig.safeBlockHorizontal * 90,
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Have you seen Floppa?",
+                              style: MyThemes.settingsHeadTextStyle,
+                            ),
+                            SizedBox(
+                              height: SizeConfig.safeBlockVertical * 0.7,
+                            ),
+                            Text(
+                              "Press to know additional info",
+                              style: MyThemes.settingsSubtitleTextStyle.copyWith(
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor ==
+                                              Colors.white
+                                          ? Colors.grey
+                                          : Colors.grey.shade600),
+                            )
+                          ],
+                        ),
+                      ),
+                ),
               ],
             ),
           ),
