@@ -64,6 +64,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var brightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window)
+        .platformBrightness;
+        
     SizeConfig().init(context);
     return SafeArea(
       child: Scaffold(
@@ -150,7 +153,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             value: ThemeType.Auto,
                                             groupValue: themeRadioType,
                                             activeColor:
-                                                Theme.of(context).primaryColor,
+                                                MyThemes.kPrimaryColor.value,
                                             title: Text(
                                               "Auto",
                                               style: MyThemes
@@ -183,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             contentPadding: EdgeInsets.all(0),
                                             groupValue: themeRadioType,
                                             activeColor:
-                                                Theme.of(context).primaryColor,
+                                                MyThemes.kPrimaryColor.value,
                                             title: Text(
                                               "Light",
                                               style: MyThemes
@@ -216,7 +219,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             contentPadding: EdgeInsets.all(0),
                                             groupValue: themeRadioType,
                                             activeColor:
-                                                Theme.of(context).primaryColor,
+                                                MyThemes.kPrimaryColor.value,
                                             title: Text(
                                               "Dark",
                                               style: MyThemes
@@ -238,23 +241,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ],
                                   ),
                                   actions: [
-                                    TextButton(
-                                      child: Text(
-                                        "OK",
-                                        style: TextStyle(
-                                            fontSize:
-                                                SizeConfig.safeBlockVertical *
-                                                    1.9,
-                                            fontFamily: "Circular Std",
-                                            letterSpacing: 1.5),
+                                    Theme(
+                                      data: Theme.of(context).copyWith(
+                                          colorScheme:  brightness == Brightness.light
+                    ? (ColorScheme.light().copyWith(
+                        primary: MyThemes.kPrimaryColor.value,
+                      ))
+                    : ColorScheme.dark().copyWith(
+                        primary: MyThemes.kPrimaryColor.value,
+                      )),
+                                      child: TextButton(
+                                        child: Text(
+                                          "OK",
+                                          style: TextStyle(
+                                              fontSize:
+                                                  SizeConfig.safeBlockVertical *
+                                                      1.9,
+                                              fontFamily: "Circular Std",
+                                              letterSpacing: 1.5),
+                                        ),
+                                        onPressed: () {
+                                          sharedPrefs.appTheme =
+                                              themeEnumToString(themeRadioType);
+                                          print("Pressed OK: " +
+                                              sharedPrefs.appTheme);
+                                          Get.back();
+                                          // Navigator.of(context).pop();
+                                        },
                                       ),
-                                      onPressed: () {
-                                        sharedPrefs.appTheme =
-                                            themeEnumToString(themeRadioType);
-                                        print("Pressed OK: " +
-                                            sharedPrefs.appTheme);
-                                        Navigator.of(context).pop();
-                                      },
                                     ),
                                   ],
                                 );

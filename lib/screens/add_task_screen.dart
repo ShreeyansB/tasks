@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tasks/models/task_model.dart';
 import 'package:tasks/util/database_helper.dart';
 import 'package:tasks/util/size_config.dart';
@@ -41,8 +42,22 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   Future<List<Task>> _taskList;
 
   _handleDatePicker() async {
+    var brightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window)
+        .platformBrightness;
     final DateTime mydate = await showDatePicker(
       context: context,
+      builder: (context, child) {
+        return Theme(
+            data: Theme.of(context).copyWith(
+                colorScheme: brightness == Brightness.light
+                    ? (ColorScheme.light().copyWith(
+                        primary: MyThemes.kPrimaryColor.value,
+                      ))
+                    : ColorScheme.dark().copyWith(
+                        primary: MyThemes.kPrimaryColor.value,
+                      )),
+            child: child);
+      },
       initialDate: date,
       firstDate: DateTime(2000),
       lastDate: DateTime(2200),
@@ -57,8 +72,22 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   }
 
   _handleTimePicker() async {
+    var brightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window)
+        .platformBrightness;
     final TimeOfDay mytime = await showTimePicker(
       context: context,
+      builder: (context, child) {
+        return Theme(
+            data: Theme.of(context).copyWith(
+                colorScheme: brightness == Brightness.light
+                    ? (ColorScheme.light().copyWith(
+                        primary: MyThemes.kPrimaryColor.value,
+                      ))
+                    : ColorScheme.dark().copyWith(
+                        primary: MyThemes.kPrimaryColor.value,
+                      )),
+            child: child);
+      },
       initialTime: TimeOfDay.now(),
     );
     if ((mytime != null) &&
@@ -132,6 +161,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   @override
   void initState() {
     super.initState();
+    print("Add tasks screen: " + MyThemes.kPrimaryColor.value.toString());
     _scrollController = ScrollController();
     _focusNode = FocusNode();
     _focusNodeDate = FocusNode();
@@ -212,7 +242,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       }
       _showNotif(task);
       widget.updateListCallback();
-      Navigator.pop(context);
+      Get.back();
+      //Navigator.pop(context);
     }
   }
 
@@ -221,7 +252,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     _deleteNotif(widget.task);
     DatabaseHelper.instance.deleteTask(widget.task);
     widget.updateListCallback();
-    Navigator.pop(context);
+    Get.back();
+    // Navigator.pop(context);
   }
 
   @override
@@ -246,7 +278,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       left: SizeConfig.safeBlockHorizontal * 3.6,
                     ),
                     child: GestureDetector(
-                      onTap: () => Navigator.pop(context),
+                      onTap: () => Get.back(), // Navigator.pop(context)
                       child: Icon(
                         Icons.arrow_back_ios_rounded,
                         size: SizeConfig.safeBlockVertical * 4,
@@ -309,7 +341,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                 },
                                 initialValue: title,
                                 style: MyThemes.fieldTextStyle,
-                                cursorColor: Theme.of(context).primaryColor,
+                                cursorColor: MyThemes.kPrimaryColor.value,
                                 cursorHeight: SizeConfig.safeBlockVertical * 3,
                                 decoration: InputDecoration(
                                   errorStyle:
@@ -324,7 +356,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     borderSide: BorderSide(
                                         width:
                                             SizeConfig.safeBlockVertical * 0.2,
-                                        color: Theme.of(context).primaryColor),
+                                        color: MyThemes.kPrimaryColor.value),
                                     borderRadius: BorderRadius.circular(
                                         SizeConfig.safeBlockVertical * 0.7),
                                   ),
@@ -368,7 +400,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                 },
                                 controller: _dateController,
                                 style: MyThemes.fieldTextStyle,
-                                cursorColor: Theme.of(context).primaryColor,
+                                cursorColor: MyThemes.kPrimaryColor.value,
                                 cursorHeight: SizeConfig.safeBlockVertical * 3,
                                 decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(
@@ -381,7 +413,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     borderSide: BorderSide(
                                         width:
                                             SizeConfig.safeBlockVertical * 0.2,
-                                        color: Theme.of(context).primaryColor),
+                                        color: MyThemes.kPrimaryColor.value),
                                     borderRadius: BorderRadius.circular(
                                         SizeConfig.safeBlockVertical * 0.7),
                                   ),
@@ -425,7 +457,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                 },
                                 controller: _timeController,
                                 style: MyThemes.fieldTextStyle,
-                                cursorColor: Theme.of(context).primaryColor,
+                                cursorColor: MyThemes.kPrimaryColor.value,
                                 cursorHeight: SizeConfig.safeBlockVertical * 3,
                                 decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(
@@ -438,7 +470,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     borderSide: BorderSide(
                                         width:
                                             SizeConfig.safeBlockVertical * 0.2,
-                                        color: Theme.of(context).primaryColor),
+                                        color: MyThemes.kPrimaryColor.value),
                                     borderRadius: BorderRadius.circular(
                                         SizeConfig.safeBlockVertical * 0.7),
                                   ),
@@ -478,6 +510,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   ChoiceChip(
+                                    selectedColor: MyThemes.kPrimaryColor.value,
                                     label: Text(
                                       "Low",
                                       style: MyThemes.fieldTextStyle,
@@ -501,6 +534,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     },
                                   ),
                                   ChoiceChip(
+                                    selectedColor: MyThemes.kPrimaryColor.value,
                                     label: Text(
                                       "Medium",
                                       style: MyThemes.fieldTextStyle,
@@ -524,6 +558,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     },
                                   ),
                                   ChoiceChip(
+                                    selectedColor: MyThemes.kPrimaryColor.value,
                                     label: Text(
                                       "High",
                                       style: MyThemes.fieldTextStyle,
@@ -663,7 +698,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                     style: TextButton.styleFrom(
                                       primary: Theme.of(context)
                                           .scaffoldBackgroundColor,
-                                      backgroundColor: MyThemes.kPrimaryColor.value,
+                                      backgroundColor:
+                                          MyThemes.kPrimaryColor.value,
                                       animationDuration:
                                           Duration(milliseconds: 10),
                                       shape: RoundedRectangleBorder(

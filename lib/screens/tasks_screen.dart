@@ -13,7 +13,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:tasks/util/shared_prefs_helper.dart';
 
 class TasksScreen extends StatefulWidget {
@@ -170,18 +169,26 @@ class _TasksScreenState extends State<TasksScreen> {
                     fontFamily: "Circular Std"),
               ),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.fade,
-                    child: AddTaskScreen(
-                      updateListCallback: _updateTaskList,
-                    ),
-                    curve: Curves.easeInCubic,
-                    duration: Duration(milliseconds: 300),
-                    reverseDuration: Duration(milliseconds: 300),
+                Get.to(
+                  () => AddTaskScreen(
+                    updateListCallback: _updateTaskList,
                   ),
+                  transition: Transition.fadeIn,
+                  curve: Curves.easeInCubic,
+                  duration: Duration(milliseconds: 300),
                 );
+                // Navigator.push(
+                //   context,
+                //   PageTransition(
+                //     type: PageTransitionType.fade,
+                //     child: AddTaskScreen(
+                //       updateListCallback: _updateTaskList,
+                //     ),
+                //     curve: Curves.easeInCubic,
+                //     duration: Duration(milliseconds: 300),
+                //     reverseDuration: Duration(milliseconds: 300),
+                //   ),
+                // );
               },
             ),
           ),
@@ -419,19 +426,28 @@ class _TaskTileState extends State<TaskTile> {
                 right: SizeConfig.safeBlockHorizontal * 4),
             child: ListTile(
               onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.fade,
-                    child: AddTaskScreen(
-                      updateListCallback: widget.callback,
-                      task: widget.task,
-                    ),
-                    curve: Curves.easeInCubic,
-                    duration: Duration(milliseconds: 300),
-                    reverseDuration: Duration(milliseconds: 300),
+                Get.to(
+                  () => AddTaskScreen(
+                    updateListCallback: widget.callback,
+                    task: widget.task,
                   ),
+                  transition: Transition.fadeIn,
+                  curve: Curves.easeInCubic,
+                  duration: Duration(milliseconds: 300),
                 );
+                // Navigator.push(
+                //   context,
+                //   PageTransition(
+                //     type: PageTransitionType.fade,
+                //     child: AddTaskScreen(
+                //       updateListCallback: widget.callback,
+                //       task: widget.task,
+                //     ),
+                //     curve: Curves.easeInCubic,
+                //     duration: Duration(milliseconds: 300),
+                //     reverseDuration: Duration(milliseconds: 300),
+                //   ),
+                // );
               },
               title: Text(
                 widget.task.title,
