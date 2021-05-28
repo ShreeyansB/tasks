@@ -564,7 +564,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               _controller.play();
                               _controller.setLooping(true);
                         }
-                      }
+                      } else {
+                          media = Image.asset("assets/images/flopper.jpg");
+                        }
                     });
                     await showDialog(
                         context: context,
