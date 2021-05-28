@@ -1,13 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:tasks/main.dart';
+import 'package:tasks/models/task_model.dart';
 import 'package:tasks/util/database_helper.dart';
 import 'package:tasks/util/size_config.dart';
 import 'package:tasks/util/themes.dart';
@@ -33,11 +33,15 @@ enum ThemeType { Auto, Light, Dark }
 var selectedColor = 0.obs;
 
 Future<bool> checkInternet() async {
-  final result = await InternetAddress.lookup('google.com');
-  if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-    return true;
-  } else
+  try {
+    final result = await InternetAddress.lookup('google.com');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      return true;
+    } else
+      return false;
+  } on SocketException catch (_) {
     return false;
+  }
 }
 
 List<String> mediaURL = [
@@ -99,14 +103,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
     tz.setLocalLocation(tz.getLocation(timeZoneName));
   }
 
+  Future notifSelected(String payload) async {
+    print(payload);
+  }
+
   @override
   void initState() {
     super.initState();
-    getTimeZone();
     _controller = VideoPlayerController.network(mediaURL[random.nextInt(3) + 5])
       ..initialize().then((value) => setState(() {}));
     themeRadioType = themeStringToEnum(sharedPrefs.appTheme);
     selectedColor.value = initColor();
+
+    getTimeZone();
+    flutterNotif = FlutterLocalNotificationsPlugin();
+    var androidInitSettings =
+        AndroidInitializationSettings("ic_stat_notifications_active");
+    var iOSInitSettings = IOSInitializationSettings();
+    var initSettings = InitializationSettings(
+        android: androidInitSettings, iOS: iOSInitSettings);
+    flutterNotif.initialize(initSettings, onSelectNotification: notifSelected);
     //print("init color: "+initColor().toString());
   }
 
@@ -413,17 +429,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    Directory dir = await getApplicationDocumentsDirectory();
-                    String path = dir.path + '/todo_list.db';
-                    String bakPath = dir.path +
+                    Directory myAppDir = await getExternalStorageDirectory();
+                    String bakPath = myAppDir.path +
                         '/backup-' +
                         DateTime.now().toIso8601String() +
                         '.bak';
-                    File myDB = File(path);
-                    myDB.copy(bakPath);
                     File bak = File(bakPath);
-                    await Share.shareFiles([bakPath], text: "Tasks Backup");
-                    bak.delete();
+                    bak.writeAsString(jsonEncode(
+                        await DatabaseHelper.instance.getTaskMapList()));
+                    print(myAppDir.path);
+
+                    var androidDetails = AndroidNotificationDetails(
+                        'Tasks',
+                        'Task Alert',
+                        'Sends alerts to User when the Task is due',
+                        importance: Importance.high);
+                    var iOSDetails = IOSNotificationDetails();
+                    var notifDetails = NotificationDetails(
+                        android: androidDetails, iOS: iOSDetails);
+                    await flutterNotif.show(0, 'Backup Created',
+                        'Saved to ${bak.path}', notifDetails);
                   },
                   child: Padding(
                     padding: EdgeInsets.only(
@@ -464,36 +489,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     FilePickerResult result =
                         await FilePicker.platform.pickFiles();
 
+                    var androidDetails = AndroidNotificationDetails(
+                        'Tasks',
+                        'Task Alert',
+                        'Sends alerts to User when the Task is due',
+                        importance: Importance.high);
+                    var iOSDetails = IOSNotificationDetails();
+                    var notifDetails = NotificationDetails(
+                        android: androidDetails, iOS: iOSDetails);
+
                     if (result != null) {
                       File file = File(result.files.single.path);
-                      Directory dir = await getApplicationDocumentsDirectory();
-                      String path = dir.path + '/todo_list.db';
-                      File oldDB = File(path);
-                      oldDB.delete();
-                      File restored = await file.copy(path);
-                      dir.list().forEach((element) {
-                        print(element.path);
-                      });
-                      Get.snackbar("Restoring your data",
-                          "App will close in 5 seconds. Please restart the app",
-                          snackPosition: SnackPosition.BOTTOM);
-
-                      // Reinit Notifs Start
-                      var _taskList =
-                          await DatabaseHelper.instance.getTaskList();
-                      var androidDetails = AndroidNotificationDetails(
-                          'Tasks',
-                          'Task Alert',
-                          'Sends alerts to User when the Task is due',
-                          importance: Importance.high);
-                      var iOSDetails = IOSNotificationDetails();
-                      var notifDetails = NotificationDetails(
-                          android: androidDetails, iOS: iOSDetails);
-
-                      for (var task in _taskList) {
-                        if (task.status == 0) {
+                      if (file.path.split('/').last.split('.').last != "bak") {
+                        Get.snackbar(
+                            "Error occured", "Please select correct file",
+                            snackPosition: SnackPosition.BOTTOM,
+                            duration: Duration(seconds: 4));
+                        return;
+                      }
+                      String backupData = await file.readAsString();
+                      //try {
+                      List<dynamic> data = jsonDecode(backupData);
+                      List<Task> myTasks = [];
+                      for (var i = 0; i < data.length; i++) {
+                        myTasks.add(Task.fromMap(data[i]));
+                        myTasks[i].id = null;
+                      }
+                      myTasks.forEach((task) async {
+                        int myID =
+                            await DatabaseHelper.instance.insertTask(task);
+                        print("DEBUG: " +
+                            tz.TZDateTime.from(task.date, tz.local).toString());
+                        if (task.date.isAfter(DateTime.now()) &&
+                            task.status == 0) {
                           flutterNotif.zonedSchedule(
-                              task.id,
+                              myID,
                               task.title,
                               "Due at ${_timeFormatter.format(task.date)}",
                               tz.TZDateTime.from(task.date, tz.local),
@@ -503,13 +533,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       .absoluteTime,
                               androidAllowWhileIdle: true);
                         }
-                      }
-                      // Reinit Notifs End
+                      });
+
+                      Get.snackbar("Restoring your data",
+                          "App will close in 5 seconds. Please restart the app",
+                          snackPosition: SnackPosition.BOTTOM,
+                          duration: Duration(seconds: 4));
                       Future.delayed(
                           Duration(seconds: 5),
                           () => SystemChannels.platform
                               .invokeMethod('SystemNavigator.pop'));
-                    } else {}
+                    } else {
+                      Get.snackbar(
+                          "Error occured", "Please select correct file",
+                          snackPosition: SnackPosition.BOTTOM,
+                          duration: Duration(seconds: 4));
+                    }
                   },
                   child: Padding(
                     padding: EdgeInsets.only(
@@ -551,7 +590,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Widget media;
                     checkInternet().then((value) {
                       if (value == true) {
-                        int randInt = random.nextInt(9);
+                        int randInt = random.nextInt(8);
                         if (randInt < 5) {
                           media = Image.network(mediaURL[randInt]);
                         } else {
@@ -561,12 +600,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   child: VideoPlayer(_controller),
                                 )
                               : Container();
-                              _controller.play();
-                              _controller.setLooping(true);
+                          _controller.play();
+                          _controller.setLooping(true);
                         }
                       } else {
-                          media = Image.asset("assets/images/flopper.jpg");
-                        }
+                        media = Image.asset("assets/images/flopper.jpg");
+                      }
                     });
                     await showDialog(
                         context: context,
