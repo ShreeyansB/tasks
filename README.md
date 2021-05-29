@@ -8,10 +8,10 @@ A simple task management app which stores tasks and notifies the user when due.
 
 ## Planned Features
 
-* Settings Menu
-* Sort By Date or By Priority
-* Themes
-* Export database
+* Settings Menu (Done)
+* Sort By Date or By Priority (Done)
+* Themes (Done)
+* Export/Import database (Done)
 
 ## Credits
 

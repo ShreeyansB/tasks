@@ -11,7 +11,9 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="Tasks"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round">
+        
         <meta-data
             android:name="com.ballistic.tasks.alert_icon"
             android:resource="@drawable/ic_stat_notifications_active" />
@@ -51,4 +53,8 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+        <background android:drawable="@color/ic_launcher_background" />
+        <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+    </adaptive-icon>
 </manifest>
