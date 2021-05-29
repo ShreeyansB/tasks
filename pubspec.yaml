@@ -35,7 +35,7 @@ flutter:
 
   assets:
     - assets/images/order_by.flr
-    - assets/images/flopper.jpg
+    - assets/images/flop/
 
   fonts:
     - family: "Circular Std"

@@ -44,17 +44,6 @@ Future<bool> checkInternet() async {
   }
 }
 
-List<String> mediaURL = [
-  "https://i.imgur.com/wi6ry3t.jpg",
-  "https://i.imgur.com/d9Da2sn.jpg",
-  "https://i.imgur.com/NnilJHc.jpg",
-  "https://i.imgur.com/epRYtr0.jpg",
-  "https://i.imgur.com/0yzzmDv.jpg",
-  "https://i.imgur.com/lmQPsVz.mp4",
-  "https://i.imgur.com/Yi1aCef.mp4",
-  "https://i.imgur.com/uKVm4WT.mp4"
-];
-
 ThemeMode getThemeMode(ThemeType theme) {
   if (theme == ThemeType.Auto)
     return ThemeMode.system;
@@ -110,7 +99,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(mediaURL[random.nextInt(3) + 5])
+    _controller = VideoPlayerController.asset(
+        "assets/images/flop/${random.nextInt(3) + 6}.mp4")
       ..initialize().then((value) => setState(() {}));
     themeRadioType = themeStringToEnum(sharedPrefs.appTheme);
     selectedColor.value = initColor();
@@ -590,36 +580,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 GestureDetector(
                   onTap: () async {
                     Widget media;
-                    checkInternet().then((value) {
-                      if (value == true) {
-                        int randInt = random.nextInt(8);
-                        print(mediaURL[randInt]);
-                        if (randInt < 5) {
-                          media = Image.network(
-                            mediaURL[randInt],
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: LinearProgressIndicator(
-                                  color: MyThemes.kPrimaryColor.value,
-                                ),
-                              );
-                            },
-                          );
-                        } else {
-                          media = _controller.value.isInitialized
-                              ? AspectRatio(
-                                  aspectRatio: _controller.value.aspectRatio,
-                                  child: VideoPlayer(_controller),
-                                )
-                              : Container();
-                          _controller.play();
-                          _controller.setLooping(true);
-                        }
-                      } else {
-                        media = Image.asset("assets/images/flopper.jpg");
-                      }
-                    });
+                    int randInt = random.nextInt(8);
+                    print(randInt);
+                    if (randInt < 6) {
+                      media = Image.asset("assets/images/flop/$randInt.jpg");
+                    } else {
+                      media = _controller.value.isInitialized
+                          ? AspectRatio(
+                              aspectRatio: _controller.value.aspectRatio,
+                              child: VideoPlayer(_controller),
+                            )
+                          : Container();
+                      _controller.play();
+                      _controller.setLooping(true);
+                    }
                     await showDialog(
                         context: context,
                         builder: (BuildContext context) {
