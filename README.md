@@ -6,6 +6,11 @@ A simple task management app which stores tasks and notifies the user when due.
 
 ![Screenrecord](screenrecord.gif)
 
+## Compatibility
+
+* Android: 8.0 (API Level 26) and up
+* iOS: Not tested yet
+
 ## Planned Features
 
 * Settings Menu (Done)
