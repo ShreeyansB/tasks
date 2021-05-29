@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ballisticswami.tasks">
+    package="com.ballistic.tasks">
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -13,7 +13,7 @@
         android:label="Tasks"
         android:icon="@mipmap/ic_launcher">
         <meta-data
-            android:name="com.ballisticswami.tasks.alert_icon"
+            android:name="com.ballistic.tasks.alert_icon"
             android:resource="@drawable/ic_stat_notifications_active" />
 
         <activity

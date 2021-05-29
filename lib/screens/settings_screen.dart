@@ -437,7 +437,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     File bak = File(bakPath);
                     bak.writeAsString(jsonEncode(
                         await DatabaseHelper.instance.getTaskMapList()));
-                    print(myAppDir.path);
 
                     var androidDetails = AndroidNotificationDetails(
                         'Tasks',
@@ -447,8 +446,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     var iOSDetails = IOSNotificationDetails();
                     var notifDetails = NotificationDetails(
                         android: androidDetails, iOS: iOSDetails);
-                    await flutterNotif.show(0, 'Backup Created',
-                        'Saved to ${bak.path}', notifDetails);
+                    await flutterNotif.show(
+                        0,
+                        'Backup Created',
+                        'Saved to ${myAppDir.path.split("/storage/emulated/0/").last}',
+                        notifDetails);
                   },
                   child: Padding(
                     padding: EdgeInsets.only(
@@ -591,8 +593,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     checkInternet().then((value) {
                       if (value == true) {
                         int randInt = random.nextInt(8);
+                        print(mediaURL[randInt]);
                         if (randInt < 5) {
-                          media = Image.network(mediaURL[randInt]);
+                          media = Image.network(
+                            mediaURL[randInt],
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: LinearProgressIndicator(
+                                  color: MyThemes.kPrimaryColor.value,
+                                ),
+                              );
+                            },
+                          );
                         } else {
                           media = _controller.value.isInitialized
                               ? AspectRatio(
