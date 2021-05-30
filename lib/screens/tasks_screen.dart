@@ -49,7 +49,11 @@ class _TasksScreenState extends State<TasksScreen> {
 
   Future getTimeZone() async {
     tz.initializeTimeZones();
-    final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+    String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+
+    if(timeZoneName == "Asia/Calcutta") {
+      timeZoneName = "Asia/Kolkata";
+    }
 
     tz.setLocalLocation(tz.getLocation(timeZoneName));
   }
